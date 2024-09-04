@@ -30,14 +30,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     _ui->comboOctave->addItem("6");
 
     SetGamemode(Gamemode::Initial);
+
+    installEventFilter(this);
 }
 
 MainWindow::~MainWindow(){
+    DeleteThread(&_threadSoundPlayer);
     delete _ui;
 }
 
 bool MainWindow::Init(){
 
+    if(!StartThreadSoundPlayer())
+        return false;
+
+    emit PlaySoundNext(Sounds::Sound::welcome);
+    emit PlaySoundNext(Sounds::Sound::choosegamemode);
     return true;
 }
 
@@ -68,6 +76,36 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
     }
 
     return QMainWindow::eventFilter(target, event);
+}
+
+bool MainWindow::StartThreadSoundPlayer(){
+
+    if(_threadSoundPlayer)
+        return true;
+
+    WorkerSoundPlayer *worker;
+
+    try{
+        _threadSoundPlayer = new QThread();
+    }catch(...){
+        return false;
+    }
+
+    try{
+        worker = new WorkerSoundPlayer();
+    }catch(...){
+        delete _threadSoundPlayer;
+        _threadSoundPlayer = nullptr;
+        return false;
+    }
+
+    connect(_threadSoundPlayer, &QThread::finished, worker, &WorkerSoundPlayer::deleteLater);
+    connect(this, &MainWindow::PlaySoundNext, worker, &WorkerSoundPlayer::PlayNext);
+
+    worker->moveToThread(_threadSoundPlayer);
+    _threadSoundPlayer->start();
+
+    return true;
 }
 
 void MainWindow::SetGamemode(Gamemode mode){
@@ -171,6 +209,20 @@ void MainWindow::ResetShortcuts(){
     _ui->button11->setShortcut(QKeySequence(Qt::Key_C));
     _ui->button12->setShortcut(QKeySequence(Qt::Key_V));
     _ui->buttonSilence->setShortcut(QKeySequence(Qt::Key_Space));
+}
+
+void MainWindow::DeleteThread(QThread **threadptr){
+    QThread *ptr = *threadptr;
+
+    if(ptr){
+        ptr->quit();
+        if(!ptr->wait(5000)){
+            ptr->terminate();
+            ptr->wait();
+        }
+        delete *threadptr;
+        *threadptr = nullptr;
+    }
 }
 
 void MainWindow::On_button1_Clicked(){

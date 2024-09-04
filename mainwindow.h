@@ -5,6 +5,8 @@
 #include <QThread>
 #include <QKeyEvent>
 
+#include "workersoundplayer.h"
+
 // DEBUG
 #include <QDebug>
 // DEBUG
@@ -59,13 +61,16 @@ class MainWindow : public QMainWindow{
 
 private:
     Ui::MainWindow *_ui;
+    QThread *_threadSoundPlayer = nullptr;
     Gamemode _currentgamemode = Gamemode::Initial;
 
     bool eventFilter(QObject *target, QEvent *event);
+    bool StartThreadSoundPlayer();
     void SetGamemode(Gamemode mode);
     void SetUIMode(UIMode mode);
     void ButtonClicked(ButtonType btn);
     void ResetShortcuts();
+    void DeleteThread(QThread **threadptr);
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -90,5 +95,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     bool Init();
+
+signals:
+    void PlaySoundNext(Sounds::Sound);
 };
 #endif // MAINWINDOW_H
