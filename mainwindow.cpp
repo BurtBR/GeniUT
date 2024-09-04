@@ -5,6 +5,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     _ui->setupUi(this);
 
     connect(_ui->button1, &QPushButton::clicked, this, &MainWindow::On_button1_Clicked);
+    connect(_ui->button2, &QPushButton::clicked, this, &MainWindow::On_button2_Clicked);
+    connect(_ui->button3, &QPushButton::clicked, this, &MainWindow::On_button3_Clicked);
+    connect(_ui->button4, &QPushButton::clicked, this, &MainWindow::On_button4_Clicked);
+    connect(_ui->button5, &QPushButton::clicked, this, &MainWindow::On_button5_Clicked);
+    connect(_ui->button6, &QPushButton::clicked, this, &MainWindow::On_button6_Clicked);
+    connect(_ui->button7, &QPushButton::clicked, this, &MainWindow::On_button7_Clicked);
+    connect(_ui->button8, &QPushButton::clicked, this, &MainWindow::On_button8_Clicked);
+    connect(_ui->button9, &QPushButton::clicked, this, &MainWindow::On_button9_Clicked);
+    connect(_ui->button10, &QPushButton::clicked, this, &MainWindow::On_button10_Clicked);
+    connect(_ui->button11, &QPushButton::clicked, this, &MainWindow::On_button11_Clicked);
+    connect(_ui->button12, &QPushButton::clicked, this, &MainWindow::On_button12_Clicked);
+    connect(_ui->buttonSilence, &QPushButton::clicked, this, &MainWindow::On_buttonSilence_Clicked);
+    connect(_ui->buttonRecord, &QPushButton::clicked, this, &MainWindow::On_buttonRecord_Clicked);
+    connect(_ui->buttonPlay, &QPushButton::clicked, this, &MainWindow::On_buttonPlay_Clicked);
+    connect(_ui->buttonSave, &QPushButton::clicked, this, &MainWindow::On_buttonSave_Clicked);
+    connect(_ui->buttonOpen, &QPushButton::clicked, this, &MainWindow::On_buttonOpen_Clicked);
+    connect(_ui->buttonBack, &QPushButton::clicked, this, &MainWindow::On_buttonBack_Clicked);
 
     _ui->comboOctave->addItem("2");
     _ui->comboOctave->addItem("3");
@@ -94,7 +111,6 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->labelOctave->hide();
         _ui->comboOctave->hide();
         _ui->buttonPlay->hide();
-        ResetShortcuts();
         break;
 
     case UIMode::Practice:
@@ -106,10 +122,39 @@ void MainWindow::SetUIMode(UIMode mode){
     default:
         break;
     }
+    ResetShortcuts();
 }
 
-void MainWindow::On_button1_Clicked(){
-    qDebug() << "Butao 1";
+void MainWindow::ButtonClicked(ButtonType btn){
+    if(_currentgamemode == Gamemode::Initial){
+        switch(btn){
+        case ButtonType::Btn1:
+            SetGamemode(Gamemode::Practice);
+            break;
+        case ButtonType::Btn2:
+            SetGamemode(Gamemode::OneMusic);
+            break;
+        case ButtonType::Btn3:
+            SetGamemode(Gamemode::OneRandom);
+            break;
+        case ButtonType::Btn5:
+            SetGamemode(Gamemode::TwoMusic);
+            break;
+        case ButtonType::Btn6:
+            SetGamemode(Gamemode::TwoRandom);
+            break;
+        case ButtonType::Btn7:
+            SetGamemode(Gamemode::TwoMakeSong);
+            break;
+        case ButtonType::Btn10:
+            SetGamemode(Gamemode::Creation);
+            break;
+        default:
+            break;
+        }
+    }else{
+
+    }
 }
 
 void MainWindow::ResetShortcuts(){
@@ -126,4 +171,59 @@ void MainWindow::ResetShortcuts(){
     _ui->button11->setShortcut(QKeySequence(Qt::Key_C));
     _ui->button12->setShortcut(QKeySequence(Qt::Key_V));
     _ui->buttonSilence->setShortcut(QKeySequence(Qt::Key_Space));
+}
+
+void MainWindow::On_button1_Clicked(){
+    ButtonClicked(ButtonType::Btn1);
+}
+void MainWindow::On_button2_Clicked(){
+    ButtonClicked(ButtonType::Btn2);
+}
+void MainWindow::On_button3_Clicked(){
+    ButtonClicked(ButtonType::Btn3);
+}
+void MainWindow::On_button4_Clicked(){
+    ButtonClicked(ButtonType::Btn4);
+}
+void MainWindow::On_button5_Clicked(){
+    ButtonClicked(ButtonType::Btn5);
+}
+void MainWindow::On_button6_Clicked(){
+    ButtonClicked(ButtonType::Btn6);
+}
+void MainWindow::On_button7_Clicked(){
+    ButtonClicked(ButtonType::Btn7);
+}
+void MainWindow::On_button8_Clicked(){
+    ButtonClicked(ButtonType::Btn8);
+}
+void MainWindow::On_button9_Clicked(){
+    ButtonClicked(ButtonType::Btn9);
+}
+void MainWindow::On_button10_Clicked(){
+    ButtonClicked(ButtonType::Btn10);
+}
+void MainWindow::On_button11_Clicked(){
+    ButtonClicked(ButtonType::Btn11);
+}
+void MainWindow::On_button12_Clicked(){
+    ButtonClicked(ButtonType::Btn12);
+}
+void MainWindow::On_buttonSilence_Clicked(){
+    ButtonClicked(ButtonType::BtnSilence);
+}
+void MainWindow::On_buttonRecord_Clicked(){
+    ButtonClicked(ButtonType::BtnRecord);
+}
+void MainWindow::On_buttonPlay_Clicked(){
+    ButtonClicked(ButtonType::BtnPlay);
+}
+void MainWindow::On_buttonSave_Clicked(){
+    ButtonClicked(ButtonType::BtnSave);
+}
+void MainWindow::On_buttonOpen_Clicked(){
+    ButtonClicked(ButtonType::BtnOpen);
+}
+void MainWindow::On_buttonBack_Clicked(){
+    ButtonClicked(ButtonType::BtnBack);
 }
