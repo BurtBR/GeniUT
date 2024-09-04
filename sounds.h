@@ -22,6 +22,8 @@ public:
         newdailyrecord,
         nomusicpractice,
         nomusicplay,
+        youmissed,
+        unabletosave,
         _end
     };
 

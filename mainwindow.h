@@ -7,6 +7,7 @@
 #include <QDir>
 
 #include "workersoundplayer.h"
+#include "workerfilehandler.h"
 
 // DEBUG
 #include <QDebug>
@@ -67,11 +68,13 @@ class MainWindow : public QMainWindow{
 private:
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
+    QThread *_threadFileHandler = nullptr;
     Gamemode _currentgamemode = Gamemode::Welcome;
     QVector<uint> _scoreToday, _scoreFile;
 
     bool eventFilter(QObject *target, QEvent *event);
     bool StartThreadSoundPlayer();
+    bool StartThreadFileHandler();
     void SetGamemode(Gamemode mode);
     void SetUIMode(UIMode mode);
     void ButtonClicked(ButtonType btn);
@@ -103,8 +106,14 @@ public:
     ~MainWindow();
     bool Init();
 
+private slots:
+    void ScoreFile(QVector<uint> score);
+    void FileError(QString text);
+    void FileHandlingFinished();
+
 signals:
     void PlaySoundNext(Sounds::Sound);
     void StopPlaying();
+    void GetScoreFile();
 };
 #endif // MAINWINDOW_H

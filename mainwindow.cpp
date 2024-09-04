@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
 
 MainWindow::~MainWindow(){
     DeleteThread(&_threadSoundPlayer);
+    DeleteThread(&_threadFileHandler);
     delete _ui;
 }
 
@@ -50,10 +51,13 @@ bool MainWindow::Init(){
     if(!StartThreadSoundPlayer())
         return false;
 
+    if(!StartThreadFileHandler())
+        return false;
+
     SetGamemode(Gamemode::Welcome);
 
     _scoreToday = {0,0,0,0,0};
-    SetScoreboard();
+    emit GetScoreFile();
 
     return true;
 }
@@ -124,6 +128,39 @@ bool MainWindow::StartThreadSoundPlayer(){
 
     worker->moveToThread(_threadSoundPlayer);
     _threadSoundPlayer->start();
+
+    return true;
+}
+
+bool MainWindow::StartThreadFileHandler(){
+
+    if(_threadFileHandler)
+        return false;
+
+    WorkerFileHandler *worker;
+
+    try{
+        _threadFileHandler = new QThread();
+    }catch(...){
+        return false;
+    }
+
+    try{
+        worker = new WorkerFileHandler();
+    }catch(...){
+        delete _threadFileHandler;
+        _threadFileHandler = nullptr;
+        return false;
+    }
+
+    connect(_threadFileHandler, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
+    connect(this, &MainWindow::GetScoreFile, worker, &WorkerFileHandler::GetScoreFile);
+    connect(worker, &WorkerFileHandler::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
+    connect(worker, &WorkerFileHandler::FileHandlingError, this, &MainWindow::FileError);
+    connect(worker, &WorkerFileHandler::ScoreFile, this, &MainWindow::ScoreFile);
+
+    worker->moveToThread(_threadFileHandler);
+    _threadFileHandler->start();
 
     return true;
 }
@@ -423,6 +460,22 @@ void MainWindow::SetScoreboard(){
     scoretext.append("</p>");
 
     _ui->textScores->setText(scoretext);
+}
+
+void MainWindow::ScoreFile(QVector<uint> score){
+    _scoreFile = score;
+    SetScoreboard();
+}
+
+void MainWindow::FileError(QString text){
+    emit StopPlaying();
+    emit PlaySoundNext(Sounds::Sound::unabletosave);
+    _ui->labelInfo->setText(text);
+}
+
+void MainWindow::FileHandlingFinished(){
+    this->setEnabled(true);
+    DeleteThread(&_threadFileHandler);
 }
 
 void MainWindow::On_button1_Clicked(){

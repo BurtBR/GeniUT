@@ -70,5 +70,7 @@
         <file>Sounds/Welcome.wav</file>
         <file>Sounds/NoMusicPlay.wav</file>
         <file>Sounds/NoMusicPractice.wav</file>
+        <file>Sounds/YouMissed.wav</file>
+        <file>Sounds/UnableToSave.wav</file>
     </qresource>
 </RCC>
