@@ -20,6 +20,8 @@ public:
         player2wins,
         newdevicerecord,
         newdailyrecord,
+        nomusicpractice,
+        nomusicplay,
         _end
     };
 

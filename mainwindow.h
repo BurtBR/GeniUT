@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QThread>
 #include <QKeyEvent>
+#include <QDir>
 
 #include "workersoundplayer.h"
 
@@ -28,6 +29,7 @@ class MainWindow : public QMainWindow{
     };
 
     enum class Gamemode{
+        Welcome,
         Initial,
         Practice,
         OneMusic,
@@ -56,13 +58,17 @@ class MainWindow : public QMainWindow{
         BtnPlay,
         BtnSave,
         BtnOpen,
-        BtnBack
+        BtnBack,
+        BtnUp,
+        BtnDown,
+        BtnDeleteLast
     };
 
 private:
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
-    Gamemode _currentgamemode = Gamemode::Initial;
+    Gamemode _currentgamemode = Gamemode::Welcome;
+    QVector<uint> _scoreToday, _scoreFile;
 
     bool eventFilter(QObject *target, QEvent *event);
     bool StartThreadSoundPlayer();
@@ -71,6 +77,7 @@ private:
     void ButtonClicked(ButtonType btn);
     void ResetShortcuts();
     void DeleteThread(QThread **threadptr);
+    void SetScoreboard();
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -98,5 +105,6 @@ public:
 
 signals:
     void PlaySoundNext(Sounds::Sound);
+    void StopPlaying();
 };
 #endif // MAINWINDOW_H

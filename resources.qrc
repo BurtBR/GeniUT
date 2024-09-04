@@ -68,5 +68,7 @@
         <file>Sounds/Player1Wins.wav</file>
         <file>Sounds/Player2Wins.wav</file>
         <file>Sounds/Welcome.wav</file>
+        <file>Sounds/NoMusicPlay.wav</file>
+        <file>Sounds/NoMusicPractice.wav</file>
     </qresource>
 </RCC>

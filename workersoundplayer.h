@@ -24,8 +24,12 @@ private slots:
 
 public slots:
     void PlayNext(Sounds::Sound s);
+    void StopPlaying();
 
 signals:
+    void PlayerPlay();
+    void PlayerStop();
+    void PlayerSetSource(QUrl);
 };
 
 #endif // WORKERSOUNDPLAYER_H

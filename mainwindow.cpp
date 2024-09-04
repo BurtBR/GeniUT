@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     _ui->comboOctave->addItem("5");
     _ui->comboOctave->addItem("6");
 
-    SetGamemode(Gamemode::Initial);
+    SetUIMode(UIMode::Initial);
 
     installEventFilter(this);
 }
@@ -41,37 +41,56 @@ MainWindow::~MainWindow(){
 
 bool MainWindow::Init(){
 
+    if(!QDir("Musicas").exists()){
+        QDir().mkdir("Musicas");
+        if(!QDir("Musicas").exists())
+            return false;
+    }
+
     if(!StartThreadSoundPlayer())
         return false;
 
-    emit PlaySoundNext(Sounds::Sound::welcome);
-    emit PlaySoundNext(Sounds::Sound::choosegamemode);
+    SetGamemode(Gamemode::Welcome);
+
+    _scoreToday = {0,0,0,0,0};
+    SetScoreboard();
+
     return true;
 }
 
 bool MainWindow::eventFilter(QObject *target, QEvent *event){
 
     if(event->type() == QEvent::KeyPress){
-        if(((QKeyEvent*)event)->modifiers().testFlag(Qt::KeypadModifier)){
-            switch(((QKeyEvent*)event)->key()){
-            case Qt::Key_2:
-                _ui->comboOctave->setCurrentText("2");
-                break;
-            case Qt::Key_3:
-                _ui->comboOctave->setCurrentText("3");
-                break;
-            case Qt::Key_4:
-                _ui->comboOctave->setCurrentText("4");
-                break;
-            case Qt::Key_5:
-                _ui->comboOctave->setCurrentText("5");
-                break;
-            case Qt::Key_6:
-                _ui->comboOctave->setCurrentText("6");
-                break;
-            default:
-                break;
-            }
+        switch(((QKeyEvent*)event)->key()){
+        case Qt::Key_2:
+            _ui->comboOctave->setCurrentText("2");
+            break;
+        case Qt::Key_3:
+            _ui->comboOctave->setCurrentText("3");
+            break;
+        case Qt::Key_4:
+            _ui->comboOctave->setCurrentText("4");
+            break;
+        case Qt::Key_5:
+            _ui->comboOctave->setCurrentText("5");
+            break;
+        case Qt::Key_6:
+            _ui->comboOctave->setCurrentText("6");
+            break;
+        case Qt::Key_Equal:
+            ButtonClicked(ButtonType::BtnUp);
+            break;
+        case Qt::Key_Plus:
+            ButtonClicked(ButtonType::BtnUp);
+            break;
+        case Qt::Key_Minus:
+            ButtonClicked(ButtonType::BtnDown);
+            break;
+        case Qt::Key_Backspace:
+            ButtonClicked(ButtonType::BtnDeleteLast);
+            break;
+        default:
+            break;
         }
     }
 
@@ -101,6 +120,7 @@ bool MainWindow::StartThreadSoundPlayer(){
 
     connect(_threadSoundPlayer, &QThread::finished, worker, &WorkerSoundPlayer::deleteLater);
     connect(this, &MainWindow::PlaySoundNext, worker, &WorkerSoundPlayer::PlayNext);
+    connect(this, &MainWindow::StopPlaying, worker, &WorkerSoundPlayer::StopPlaying);
 
     worker->moveToThread(_threadSoundPlayer);
     _threadSoundPlayer->start();
@@ -109,11 +129,69 @@ bool MainWindow::StartThreadSoundPlayer(){
 }
 
 void MainWindow::SetGamemode(Gamemode mode){
+
+    emit StopPlaying();
+
     switch(mode){
+
+    case Gamemode::Welcome:
+        SetUIMode(UIMode::Initial);
+        _currentgamemode = Gamemode::Initial;
+        emit PlaySoundNext(Sounds::Sound::welcome);
+        emit PlaySoundNext(Sounds::Sound::choosegamemode);
+        break;
 
     case Gamemode::Initial:
         SetUIMode(UIMode::Initial);
         _currentgamemode = Gamemode::Initial;
+        emit PlaySoundNext(Sounds::Sound::choosegamemode);
+        break;
+
+    case Gamemode::Practice:
+        if(QDir("Musicas").isEmpty()){
+            emit PlaySoundNext(Sounds::Sound::nomusicpractice);
+            return;
+        }
+        SetUIMode(UIMode::Practice);
+        _currentgamemode = Gamemode::Practice;
+        break;
+
+    case Gamemode::OneMusic:
+        if(QDir("Musicas").isEmpty()){
+            emit PlaySoundNext(Sounds::Sound::nomusicplay);
+            return;
+        }
+        SetUIMode(UIMode::Playing);
+        _currentgamemode = Gamemode::OneMusic;
+        break;
+
+    case Gamemode::OneRandom:
+        SetUIMode(UIMode::Playing);
+        _currentgamemode = Gamemode::OneRandom;
+        break;
+
+    case Gamemode::TwoMusic:
+        if(QDir("Musicas").isEmpty()){
+            emit PlaySoundNext(Sounds::Sound::nomusicplay);
+            return;
+        }
+        SetUIMode(UIMode::Playing);
+        _currentgamemode = Gamemode::TwoMusic;
+        break;
+
+    case Gamemode::TwoRandom:
+        SetUIMode(UIMode::Playing);
+        _currentgamemode = Gamemode::TwoRandom;
+        break;
+
+    case Gamemode::TwoMakeSong:
+        SetUIMode(UIMode::Playing);
+        _currentgamemode = Gamemode::TwoMakeSong;
+        break;
+
+    case Gamemode::Creation:
+        SetUIMode(UIMode::Creation);
+        _currentgamemode = Gamemode::Creation;
         break;
 
     default:
@@ -122,9 +200,24 @@ void MainWindow::SetGamemode(Gamemode mode){
 }
 
 void MainWindow::SetUIMode(UIMode mode){
+
+    _ui->button1->setText("C");
+    _ui->button2->setText("C#");
+    _ui->button3->setText("D");
+    _ui->button4->setText("D#");
+    _ui->button5->setText("E");
+    _ui->button6->setText("F");
+    _ui->button7->setText("F#");
+    _ui->button8->setText("G");
+    _ui->button9->setText("G#");
+    _ui->button10->setText("A");
+    _ui->button11->setText("A#");
+    _ui->button12->setText("B");
+
     switch(mode){
 
     case UIMode::Initial:
+        _ui->labelInfo->setText("Aguardando...");
         _ui->button1->setText("Praticar");
         _ui->button2->setText("1 Jogador\nMúsica");
         _ui->button3->setText("1 Jogador\nAleatório");
@@ -149,12 +242,61 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->labelOctave->hide();
         _ui->comboOctave->hide();
         _ui->buttonPlay->hide();
+        _ui->labelRoundLabel->hide();
+        _ui->labelRound->hide();
         break;
 
     case UIMode::Practice:
+        _ui->textConsole->setProperty("readOnly", true);
+        _ui->textConsole->show();
+        _ui->textScores->hide();
+        _ui->buttonSilence->hide();
+        _ui->buttonBack->show();
+        _ui->buttonOpen->show();
+        _ui->buttonSave->hide();
+        _ui->buttonRecord->hide();
+        _ui->spinClock->show();
+        _ui->labelClock->show();
+        _ui->labelOctave->hide();
+        _ui->comboOctave->hide();
+        _ui->buttonPlay->show();
+        _ui->labelRoundLabel->show();
+        _ui->labelRound->show();
+        break;
+
+    case UIMode::Playing:
+        _ui->textConsole->hide();
+        _ui->textScores->show();
+        _ui->buttonSilence->hide();
+        _ui->buttonBack->show();
+        _ui->buttonOpen->hide();
+        _ui->buttonSave->hide();
+        _ui->buttonRecord->hide();
+        _ui->spinClock->hide();
+        _ui->labelClock->hide();
+        _ui->labelOctave->hide();
+        _ui->comboOctave->hide();
+        _ui->buttonPlay->hide();
+        _ui->labelRoundLabel->show();
+        _ui->labelRound->show();
         break;
 
     case UIMode::Creation:
+        _ui->textConsole->setProperty("readOnly", false);
+        _ui->textConsole->show();
+        _ui->textScores->hide();
+        _ui->buttonSilence->show();
+        _ui->buttonBack->show();
+        _ui->buttonOpen->show();
+        _ui->buttonSave->show();
+        _ui->buttonRecord->show();
+        _ui->spinClock->show();
+        _ui->labelClock->show();
+        _ui->labelOctave->show();
+        _ui->comboOctave->show();
+        _ui->buttonPlay->show();
+        _ui->labelRoundLabel->hide();
+        _ui->labelRound->hide();
         break;
 
     default:
@@ -164,6 +306,7 @@ void MainWindow::SetUIMode(UIMode mode){
 }
 
 void MainWindow::ButtonClicked(ButtonType btn){
+
     if(_currentgamemode == Gamemode::Initial){
         switch(btn){
         case ButtonType::Btn1:
@@ -191,7 +334,45 @@ void MainWindow::ButtonClicked(ButtonType btn){
             break;
         }
     }else{
-
+        switch(btn){
+        case ButtonType::Btn1:
+            break;
+        case ButtonType::Btn2:
+            break;
+        case ButtonType::Btn3:
+            break;
+        case ButtonType::Btn4:
+            break;
+        case ButtonType::Btn5:
+            break;
+        case ButtonType::Btn6:
+            break;
+        case ButtonType::Btn7:
+            break;
+        case ButtonType::Btn8:
+            break;
+        case ButtonType::Btn9:
+            break;
+        case ButtonType::Btn10:
+            break;
+        case ButtonType::Btn11:
+            break;
+        case ButtonType::Btn12:
+            break;
+        case ButtonType::BtnSilence:
+            break;
+        case ButtonType::BtnBack:
+            SetGamemode(Gamemode::Initial);
+            break;
+        case ButtonType::BtnUp:
+            break;
+        case ButtonType::BtnDown:
+            break;
+        case ButtonType::BtnDeleteLast:
+            break;
+        default:
+            break;
+        }
     }
 }
 
@@ -209,6 +390,7 @@ void MainWindow::ResetShortcuts(){
     _ui->button11->setShortcut(QKeySequence(Qt::Key_C));
     _ui->button12->setShortcut(QKeySequence(Qt::Key_V));
     _ui->buttonSilence->setShortcut(QKeySequence(Qt::Key_Space));
+    _ui->buttonBack->setShortcut(QKeySequence(Qt::Key_M));
 }
 
 void MainWindow::DeleteThread(QThread **threadptr){
@@ -223,6 +405,24 @@ void MainWindow::DeleteThread(QThread **threadptr){
         delete *threadptr;
         *threadptr = nullptr;
     }
+}
+
+void MainWindow::SetScoreboard(){
+    QString scoretext = "<p style=\"text-align: center;\"><b>Placar de Hoje:</b><br>";
+
+    for(int i=0; i<_scoreToday.size() ;i++){
+        scoretext.append(QString::number(_scoreToday[i]) + "<br>");
+    }
+
+    scoretext.append("<br><b>Placar do Dispositivo:</b><br>");
+
+    for(int i=0; i<_scoreFile.size() ;i++){
+        scoretext.append(QString::number(_scoreFile[i]) + "<br>");
+    }
+
+    scoretext.append("</p>");
+
+    _ui->textScores->setText(scoretext);
 }
 
 void MainWindow::On_button1_Clicked(){
