@@ -88,3 +88,7 @@ Sounds::Sounds(){}
 QUrl Sounds::GetSoundPath(Sound s){
     return _soundPaths[(qsizetype)s];
 }
+
+Sounds::Sound Sounds::GetTone(uint8_t octave, uint8_t pos){
+    return (Sounds::Sound)(((octave-2)*12)+pos);
+}

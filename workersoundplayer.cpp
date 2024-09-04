@@ -33,6 +33,35 @@ WorkerSoundPlayer::~WorkerSoundPlayer(){
     }
 }
 
+void WorkerSoundPlayer::PlayNow(Sounds::Sound s){
+    if(s == Sounds::Sound::silence)
+        return;
+
+    QAudioOutput *output;
+    QMediaPlayer *player;
+
+    try{
+        player = new QMediaPlayer();
+    }catch(...){
+        return;
+    }
+
+    try{
+        output = new QAudioOutput(player);
+    }catch(...){
+        delete player;
+        return;
+    }
+
+    player->setAudioOutput(output);
+    player->setSource(Sounds::GetSoundPath(s));
+    output->setVolume(0.3);
+
+    connect(player, &QMediaPlayer::mediaStatusChanged, this, &WorkerSoundPlayer::MediaStatusChanged);
+
+    player->play();
+}
+
 void WorkerSoundPlayer::PlayNext(Sounds::Sound s){
     _soundQueue.append(s);
     if(_soundQueue.size() == 1){

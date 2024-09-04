@@ -23,6 +23,7 @@ private slots:
     void MediaStatusChanged(QMediaPlayer::MediaStatus progress);
 
 public slots:
+    void PlayNow(Sounds::Sound s);
     void PlayNext(Sounds::Sound s);
     void StopPlaying();
 

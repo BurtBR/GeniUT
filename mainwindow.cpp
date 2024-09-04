@@ -22,12 +22,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     connect(_ui->buttonSave, &QPushButton::clicked, this, &MainWindow::On_buttonSave_Clicked);
     connect(_ui->buttonOpen, &QPushButton::clicked, this, &MainWindow::On_buttonOpen_Clicked);
     connect(_ui->buttonBack, &QPushButton::clicked, this, &MainWindow::On_buttonBack_Clicked);
+    connect(_ui->comboOctave, &QComboBox::currentIndexChanged, this, &MainWindow::OctaveChanged);
 
     _ui->comboOctave->addItem("2");
     _ui->comboOctave->addItem("3");
     _ui->comboOctave->addItem("4");
     _ui->comboOctave->addItem("5");
     _ui->comboOctave->addItem("6");
+
+    _ui->comboOctave->setCurrentText("4");
 
     SetUIMode(UIMode::Initial);
 
@@ -124,10 +127,11 @@ bool MainWindow::StartThreadSoundPlayer(){
 
     connect(_threadSoundPlayer, &QThread::finished, worker, &WorkerSoundPlayer::deleteLater);
     connect(this, &MainWindow::PlaySoundNext, worker, &WorkerSoundPlayer::PlayNext);
+    connect(this, &MainWindow::PlayTone, worker, &WorkerSoundPlayer::PlayNow);
     connect(this, &MainWindow::StopPlaying, worker, &WorkerSoundPlayer::StopPlaying);
 
     worker->moveToThread(_threadSoundPlayer);
-    _threadSoundPlayer->start();
+    _threadSoundPlayer->start(QThread::HighestPriority);
 
     return true;
 }
@@ -222,7 +226,7 @@ void MainWindow::SetGamemode(Gamemode mode){
         break;
 
     case Gamemode::TwoMakeSong:
-        SetUIMode(UIMode::Playing);
+        SetUIMode(UIMode::PlayingCreate);
         _currentgamemode = Gamemode::TwoMakeSong;
         break;
 
@@ -318,6 +322,23 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->labelRound->show();
         break;
 
+    case UIMode::PlayingCreate:
+        _ui->textConsole->hide();
+        _ui->textScores->show();
+        _ui->buttonSilence->hide();
+        _ui->buttonBack->show();
+        _ui->buttonOpen->hide();
+        _ui->buttonSave->hide();
+        _ui->buttonRecord->hide();
+        _ui->spinClock->show();
+        _ui->labelClock->show();
+        _ui->labelOctave->show();
+        _ui->comboOctave->show();
+        _ui->buttonPlay->hide();
+        _ui->labelRoundLabel->show();
+        _ui->labelRound->show();
+        break;
+
     case UIMode::Creation:
         _ui->textConsole->setProperty("readOnly", false);
         _ui->textConsole->show();
@@ -373,28 +394,52 @@ void MainWindow::ButtonClicked(ButtonType btn){
     }else{
         switch(btn){
         case ButtonType::Btn1:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 0));
             break;
         case ButtonType::Btn2:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 1));
             break;
         case ButtonType::Btn3:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 2));
             break;
         case ButtonType::Btn4:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 3));
             break;
         case ButtonType::Btn5:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 4));
             break;
         case ButtonType::Btn6:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 5));
             break;
         case ButtonType::Btn7:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 6));
             break;
         case ButtonType::Btn8:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 7));
             break;
         case ButtonType::Btn9:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 8));
             break;
         case ButtonType::Btn10:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 9));
             break;
         case ButtonType::Btn11:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 10));
             break;
         case ButtonType::Btn12:
+            if(!_isPlaying)
+                emit PlayTone(Sounds::GetTone(_currentoctave, 11));
             break;
         case ButtonType::BtnSilence:
             break;
@@ -402,8 +447,18 @@ void MainWindow::ButtonClicked(ButtonType btn){
             SetGamemode(Gamemode::Initial);
             break;
         case ButtonType::BtnUp:
+            if(_ui->comboOctave->currentIndex() == (_ui->comboOctave->count()-1)){
+                _ui->comboOctave->setCurrentIndex(0);
+            }else{
+                _ui->comboOctave->setCurrentIndex(_ui->comboOctave->currentIndex()+1);
+            }
             break;
         case ButtonType::BtnDown:
+            if(_ui->comboOctave->currentIndex() == 0){
+                _ui->comboOctave->setCurrentIndex(_ui->comboOctave->count()-1);
+            }else{
+                _ui->comboOctave->setCurrentIndex(_ui->comboOctave->currentIndex()-1);
+            }
             break;
         case ButtonType::BtnDeleteLast:
             break;
@@ -460,6 +515,10 @@ void MainWindow::SetScoreboard(){
     scoretext.append("</p>");
 
     _ui->textScores->setText(scoretext);
+}
+
+void MainWindow::OctaveChanged(){
+    _currentoctave = _ui->comboOctave->currentText().toUInt();
 }
 
 void MainWindow::ScoreFile(QVector<uint> score){

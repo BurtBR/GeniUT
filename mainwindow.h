@@ -26,6 +26,7 @@ class MainWindow : public QMainWindow{
         Initial,
         Practice,
         Playing,
+        PlayingCreate,
         Creation
     };
 
@@ -71,6 +72,8 @@ private:
     QThread *_threadFileHandler = nullptr;
     Gamemode _currentgamemode = Gamemode::Welcome;
     QVector<uint> _scoreToday, _scoreFile;
+    uint8_t _currentoctave = 4;
+    bool _isPlaying = false;
 
     bool eventFilter(QObject *target, QEvent *event);
     bool StartThreadSoundPlayer();
@@ -107,12 +110,14 @@ public:
     bool Init();
 
 private slots:
+    void OctaveChanged();
     void ScoreFile(QVector<uint> score);
     void FileError(QString text);
     void FileHandlingFinished();
 
 signals:
     void PlaySoundNext(Sounds::Sound);
+    void PlayTone(Sounds::Sound);
     void StopPlaying();
     void GetScoreFile();
 };
