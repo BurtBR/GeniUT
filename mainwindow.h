@@ -72,11 +72,13 @@ private:
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
     Gamemode _currentgamemode = Gamemode::Welcome;
+    QFileInfoList _musicsInFolder;
     QVector<uint> _scoreToday, _scoreFile;
     QVector<Sounds::Sound> _currentMusic;
     uint8_t _currentoctave = 4;
     uint32_t _currentRound = 1;
-    bool _isPlaying = false, _isRecording = false;
+    bool _isPlaying = false, _isRecording = false, _buttonFromPlaying = false;
+    uint _currentFileIndex = 0;
 
     bool eventFilter(QObject *target, QEvent *event);
     bool StartThreadSoundPlayer();
