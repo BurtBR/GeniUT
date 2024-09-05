@@ -39,6 +39,7 @@ public:
     static QString GetToneString(Sound s);
     static QVector<Sound> GetMusicFromString(QString str, bool &ok);
     static bool GetOctavePosFromTone(Sound s, uint8_t &octave, uint8_t &pos);
+    static bool ValidateMusicStr(QString str);
 };
 
 #endif // SOUNDS_H

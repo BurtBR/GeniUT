@@ -65,3 +65,52 @@ void WorkerFileHandler::GetScoreFile(){
     emit ScoreFile(score);
     emit FileHandlingFinished();
 }
+
+void WorkerFileHandler::SaveMusicFile(QString filename, QString music, int clock){
+    if(music[music.size()-1]!=',')
+        music.append(',');
+
+    if(!Sounds::ValidateMusicStr(music)){
+        emit InvalidMusicStr();
+        emit FileHandlingFinished();
+        return;
+    }
+
+    QFile *fp = nullptr;
+    QTextStream *out = nullptr;
+
+    try{
+        fp = new QFile(filename);
+    }catch(...){
+        emit FileHandlingError("Unable to allocate memory for File Pointer");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    if(!fp->open(QIODevice::WriteOnly | QIODevice::Text)){
+        delete fp;
+        emit FileHandlingError("Unable to open File");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    try{
+        out = new QTextStream(fp);
+    }catch(...){
+        fp->close();
+        delete fp;
+        emit FileHandlingError("Unable to allocate memory for Text Stream");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    music.prepend(QString::number(clock) + ",");
+
+    *out << music;
+
+    fp->close();
+    delete fp;
+    delete out;
+
+    emit FileHandlingFinished();
+}

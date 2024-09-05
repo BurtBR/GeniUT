@@ -1,4 +1,5 @@
 #include "sounds.h"
+#include <QRegularExpression>
 
 const QVector<QString> Sounds::_tonestr = {
     "2C", "2C#", "2D", "2D#", "2E", "2F", "2F#", "2G", "2G#", "2A", "2A#", "2B",
@@ -204,6 +205,72 @@ bool Sounds::GetOctavePosFromTone(Sound s, uint8_t &octave, uint8_t &pos){
 
     octave = (((uint)s)/12)+2;
     pos = ((uint)s)%12;
+
+    return true;
+}
+
+bool Sounds::ValidateMusicStr(QString str){
+    if(str.size() < 2)
+        return false;
+
+    enum unitedstates{ // Also known as MERRRCA
+        begin,
+        tone,
+        sharp,
+        comma
+    };
+
+    unitedstates state = begin;
+
+    for(int i=0; i<str.size() ;i++){
+
+        switch(str[i].toLatin1()){
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+            if(state != begin)
+                return false;
+            state = tone;
+            break;
+        case 'C':
+        case 'D':
+        case 'F':
+        case 'G':
+        case 'A':
+            if(state != tone)
+                return false;
+            state = sharp;
+            break;
+        case 'E':
+        case 'B':
+            if(state != tone)
+                return false;
+            state = comma;
+            break;
+        case '#':
+            if(state != sharp)
+                return false;
+            state = comma;
+            break;
+        case '_':
+            if(state!=begin)
+                return false;
+            state = comma;
+            break;
+        case ',':
+            if(state!=comma && state!=sharp)
+                return false;
+            state = begin;
+            break;
+        default:
+            return false;
+        }
+    }
+
+    if(state != begin)
+        return false;
 
     return true;
 }

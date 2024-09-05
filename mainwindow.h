@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QKeyEvent>
 #include <QDir>
+#include <QFileDialog>
 
 #include "workersoundplayer.h"
 #include "workerfilehandler.h"
@@ -128,5 +129,6 @@ signals:
     void StopPlaying();
     void GetScoreFile();
     void PlayTonesFromString(QString str, int clock);
+    void SaveMusicFile(QString filename, QString music, int clock);
 };
 #endif // MAINWINDOW_H

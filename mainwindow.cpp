@@ -163,9 +163,11 @@ bool MainWindow::StartThreadFileHandler(){
 
     connect(_threadFileHandler, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
     connect(this, &MainWindow::GetScoreFile, worker, &WorkerFileHandler::GetScoreFile);
+    connect(this, &MainWindow::SaveMusicFile, worker, &WorkerFileHandler::SaveMusicFile);
     connect(worker, &WorkerFileHandler::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
     connect(worker, &WorkerFileHandler::FileHandlingError, this, &MainWindow::FileError);
     connect(worker, &WorkerFileHandler::ScoreFile, this, &MainWindow::ScoreFile);
+    connect(worker, &WorkerFileHandler::InvalidMusicStr, this, &MainWindow::InvalidMusicStr);
 
     worker->moveToThread(_threadFileHandler);
     _threadFileHandler->start();
@@ -387,7 +389,7 @@ void MainWindow::ButtonClicked(ButtonType btn){
     }
 
     Sounds::Sound toneaux;
-    QString straux;
+    QString straux, filename;
 
     switch(_currentgamemode){
 
@@ -586,6 +588,24 @@ void MainWindow::ButtonClicked(ButtonType btn){
                     _ui->labelInfo->setText("Aguardando...");
                 _ui->buttonPlay->setText("Tocar");
             }
+            break;
+
+        case ButtonType::BtnSave:
+            straux = _ui->textConsole->toPlainText();
+            if(straux.size() < 2)
+                return;
+            filename = QFileDialog::getSaveFileName(this, "Salvar Musica", "Musicas","(*.camusi)");
+            if(filename.size()){
+                if(!StartThreadFileHandler()){
+                    emit PlaySoundNext(Sounds::Sound::unabletosave);
+                    return;
+                }
+                this->setEnabled(false);
+                emit SaveMusicFile(filename, straux, _ui->spinClock->value());
+            }
+            break;
+
+        case ButtonType::BtnOpen:
             break;
 
         default:
