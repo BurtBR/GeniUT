@@ -22,7 +22,7 @@ signals:
     void ScoreFile(QVector<uint>);
     void FileHandlingFinished();
     void InvalidMusicStr();
-    void FileMusic(QString filename, QString music, int clock);
+    void FileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
 };
 
 #endif // WORKERFILEHANDLER_H

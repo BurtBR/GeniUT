@@ -121,6 +121,7 @@ void WorkerFileHandler::OpenMusicFile(QString filename){
     bool ok;
     QFile *fp = nullptr;
     QTextStream *in = nullptr;
+    QVector<Sounds::Sound> musicvector;
 
     try{
         fp = new QFile(filename);
@@ -171,7 +172,9 @@ void WorkerFileHandler::OpenMusicFile(QString filename){
         return;
     }
 
-    if(!Sounds::ValidateMusicStr(music)){
+
+    musicvector = Sounds::GetMusicFromString(music, ok);
+    if(!ok){
         emit FileHandlingError("Corrupted File!");
         emit FileHandlingFinished();
         return;
@@ -179,6 +182,6 @@ void WorkerFileHandler::OpenMusicFile(QString filename){
 
     filename = QFileInfo(filename).fileName();
 
-    emit FileMusic(filename, music, clock);
+    emit FileMusic(filename, music, clock, musicvector);
     emit FileHandlingFinished();
 }

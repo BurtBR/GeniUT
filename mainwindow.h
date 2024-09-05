@@ -124,14 +124,15 @@ private slots:
     void InvalidMusicStr();
     void MusicFinished();
     void MusicPressButton(uint8_t octave, uint8_t pos);
-    void ReceivedFileMusic(QString filename, QString music, int clock);
+    void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
 
 signals:
     void PlaySoundNext(Sounds::Sound);
     void PlayTone(Sounds::Sound);
     void StopPlaying();
     void GetScoreFile();
-    void PlayTonesFromString(QString str, int clock);
+    void PlayTonesFromString(QString str, int clock, uint32_t limit = 0xFFFFFFFF);
+    void PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit = 0xFFFFFFFF);
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
 };

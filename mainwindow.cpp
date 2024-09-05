@@ -130,6 +130,7 @@ bool MainWindow::StartThreadSoundPlayer(){
     connect(this, &MainWindow::PlayTone, worker, &WorkerSoundPlayer::PlayNow);
     connect(this, &MainWindow::StopPlaying, worker, &WorkerSoundPlayer::StopPlaying);
     connect(this, &MainWindow::PlayTonesFromString, worker, &WorkerSoundPlayer::PlayTonesFromString);
+    connect(this, &MainWindow::PlayTones, worker, &WorkerSoundPlayer::PlayTones);
     connect(worker, &WorkerSoundPlayer::InvalidMusicStr, this, &MainWindow::InvalidMusicStr);
     connect(worker, &WorkerSoundPlayer::MusicFinished, this, &MainWindow::MusicFinished);
     connect(worker, &WorkerSoundPlayer::PressButton, this, &MainWindow::MusicPressButton);
@@ -861,12 +862,20 @@ void MainWindow::InvalidMusicStr(){
 
 void MainWindow::MusicFinished(){
     _isPlaying = false;
-    _ui->buttonRecord->setEnabled(true);
-    if(_isRecording)
-        _ui->labelInfo->setText("Gravando");
-    else
-        _ui->labelInfo->setText("Aguardando...");
-    _ui->buttonPlay->setText("Tocar");
+
+    switch(_currentgamemode){
+    case Gamemode::Creation:
+        _ui->buttonRecord->setEnabled(true);
+        if(_isRecording)
+            _ui->labelInfo->setText("Gravando");
+        else
+            _ui->labelInfo->setText("Aguardando...");
+        _ui->buttonPlay->setText("Tocar");
+        break;
+
+    default:
+        break;
+    }
 }
 
 void MainWindow::MusicPressButton(uint8_t octave, uint8_t pos){
@@ -922,11 +931,26 @@ void MainWindow::MusicPressButton(uint8_t octave, uint8_t pos){
     }
 }
 
-void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock){
+void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector){
+
     _ui->labelInfo->setText(filename);
     _ui->textConsole->clear();
     _ui->textConsole->insertPlainText(music);
     _ui->spinClock->setValue(clock);
+    _currentMusic = musicvector;
+
+    switch(_currentgamemode){
+    case Gamemode::Practice:
+        _ui->textConsole->moveCursor(QTextCursor::Start);
+        emit PlayTones(_currentMusic, clock, _currentRound);
+        break;
+
+    case Gamemode::Creation:
+        break;
+
+    default:
+        break;
+    }
 }
 
 void MainWindow::On_button1_Clicked(){

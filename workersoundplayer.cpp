@@ -32,6 +32,7 @@ WorkerSoundPlayer::WorkerSoundPlayer(QObject *parent) : QObject{parent}{
 
     _timer->setTimerType(Qt::PreciseTimer);
     connect(this, &WorkerSoundPlayer::TimerStop, _timer, &QTimer::stop);
+    connect(this, &WorkerSoundPlayer::TimerStart, _timer, qOverload<int>(&QTimer::start));
     connect(_timer, &QTimer::timeout, this, &WorkerSoundPlayer::TimerTimeout);
 
     _mediaPlayerContinuous->setAudioOutput(audioOutput);
@@ -97,7 +98,7 @@ void WorkerSoundPlayer::StopPlaying(){
     _soundQueue.clear();
 }
 
-void WorkerSoundPlayer::PlayTonesFromString(QString str, int clock){
+void WorkerSoundPlayer::PlayTonesFromString(QString str, int clock, uint32_t limit){
     bool ok;
 
     _currentMusic = Sounds::GetMusicFromString(str, ok);
@@ -109,7 +110,14 @@ void WorkerSoundPlayer::PlayTonesFromString(QString str, int clock){
         return;
     }
 
-    _timer->start(clock);
+    _currentlimit = limit;
+    emit TimerStart(clock);
+}
+
+void WorkerSoundPlayer::PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit){
+    _currentMusic = music;
+    _currentlimit = limit;
+    emit TimerStart(clock);
 }
 
 void WorkerSoundPlayer::PlayerMediaStatusChanged(QMediaPlayer::MediaStatus progress){
@@ -132,7 +140,14 @@ void WorkerSoundPlayer::TimerTimeout(){
 
     uint8_t octave=0, pos=0;
 
+    if(_currentlimit == 0){ // uint doesn't has negative values
+        emit TimerStop();
+        emit MusicFinished();
+        return;
+    }
+
     if(_currentMusic[0] != Sounds::Sound::silence){
+        _currentlimit--;
         Sounds::GetOctavePosFromTone(_currentMusic[0], octave, pos);
         emit PressButton(octave, pos);
         PlayNow(_currentMusic[0]);
@@ -142,7 +157,7 @@ void WorkerSoundPlayer::TimerTimeout(){
 
     _currentMusic.removeFirst();
 
-    if(!_currentMusic.size()){
+    if(!_currentMusic.size() || _currentlimit == 0){
         emit TimerStop();
         emit MusicFinished();
     }
