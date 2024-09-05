@@ -15,12 +15,14 @@ public:
 public slots:
     void GetScoreFile();
     void SaveMusicFile(QString filename, QString music, int clock);
+    void OpenMusicFile(QString filename);
 
 signals:
     void FileHandlingError(QString);
     void ScoreFile(QVector<uint>);
     void FileHandlingFinished();
     void InvalidMusicStr();
+    void FileMusic(QString filename, QString music, int clock);
 };
 
 #endif // WORKERFILEHANDLER_H

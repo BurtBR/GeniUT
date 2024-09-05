@@ -122,6 +122,7 @@ private slots:
     void InvalidMusicStr();
     void MusicFinished();
     void MusicPressButton(uint8_t octave, uint8_t pos);
+    void ReceivedFileMusic(QString filename, QString music, int clock);
 
 signals:
     void PlaySoundNext(Sounds::Sound);
@@ -130,5 +131,6 @@ signals:
     void GetScoreFile();
     void PlayTonesFromString(QString str, int clock);
     void SaveMusicFile(QString filename, QString music, int clock);
+    void OpenMusicFile(QString filename);
 };
 #endif // MAINWINDOW_H

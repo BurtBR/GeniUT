@@ -164,10 +164,12 @@ bool MainWindow::StartThreadFileHandler(){
     connect(_threadFileHandler, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
     connect(this, &MainWindow::GetScoreFile, worker, &WorkerFileHandler::GetScoreFile);
     connect(this, &MainWindow::SaveMusicFile, worker, &WorkerFileHandler::SaveMusicFile);
+    connect(this, &MainWindow::OpenMusicFile, worker, &WorkerFileHandler::OpenMusicFile);
     connect(worker, &WorkerFileHandler::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
     connect(worker, &WorkerFileHandler::FileHandlingError, this, &MainWindow::FileError);
     connect(worker, &WorkerFileHandler::ScoreFile, this, &MainWindow::ScoreFile);
     connect(worker, &WorkerFileHandler::InvalidMusicStr, this, &MainWindow::InvalidMusicStr);
+    connect(worker, &WorkerFileHandler::FileMusic, this, &MainWindow::ReceivedFileMusic);
 
     worker->moveToThread(_threadFileHandler);
     _threadFileHandler->start();
@@ -606,6 +608,15 @@ void MainWindow::ButtonClicked(ButtonType btn){
             break;
 
         case ButtonType::BtnOpen:
+            filename = QFileDialog::getOpenFileName(this, "Abrir Musica", "Musicas", "(*.camusi)");
+            if(filename.size()){
+                if(!StartThreadFileHandler()){
+                    emit PlaySoundNext(Sounds::Sound::unabletosave);
+                    return;
+                }
+                this->setEnabled(false);
+                emit OpenMusicFile(filename);
+            }
             break;
 
         default:
@@ -755,6 +766,13 @@ void MainWindow::MusicPressButton(uint8_t octave, uint8_t pos){
     default:
         break;
     }
+}
+
+void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock){
+    _ui->labelInfo->setText(filename);
+    _ui->textConsole->clear();
+    _ui->textConsole->insertPlainText(music);
+    _ui->spinClock->setValue(clock);
 }
 
 void MainWindow::On_button1_Clicked(){

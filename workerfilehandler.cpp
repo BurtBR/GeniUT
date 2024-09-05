@@ -109,8 +109,76 @@ void WorkerFileHandler::SaveMusicFile(QString filename, QString music, int clock
     *out << music;
 
     fp->close();
-    delete fp;
     delete out;
+    delete fp;
 
+    emit FileHandlingFinished();
+}
+
+void WorkerFileHandler::OpenMusicFile(QString filename){
+    QString music, aux;
+    int clock;
+    bool ok;
+    QFile *fp = nullptr;
+    QTextStream *in = nullptr;
+
+    try{
+        fp = new QFile(filename);
+    }catch(...){
+        emit FileHandlingError("Failed to allocate memory for File Pointer");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    if(!fp->open(QIODevice::ReadOnly | QIODevice::Text)){
+        delete fp;
+        emit FileHandlingError("Failed to allocate memory for File Pointer");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    try{
+        in = new QTextStream(fp);
+    }catch(...){
+        fp->close();
+        delete fp;
+        emit FileHandlingError("Failed to allocate memory for Text Stream");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    music = in->readAll();
+
+    fp->close();
+    delete in;
+    delete fp;
+
+    if(!music.size()){
+        emit FileHandlingError("File empty!");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    for(int i=0; music[i]!=',' && i<music.size() ;i++){
+        aux.append(music[i]);
+    }
+
+    music.remove(0, aux.size()+1);
+    clock = aux.toInt(&ok);
+    if(!ok){
+        emit FileHandlingError("Corrupted File!");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    if(!Sounds::ValidateMusicStr(music)){
+        emit FileHandlingError("Corrupted File!");
+        emit FileHandlingFinished();
+        return;
+    }
+
+    filename = QFileInfo(filename).fileName();
+
+    emit FileMusic(filename, music, clock);
     emit FileHandlingFinished();
 }
