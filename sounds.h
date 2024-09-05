@@ -35,6 +35,7 @@ public:
     Sounds();
     static QUrl GetSoundPath(Sound s);
     static Sound GetTone(uint8_t octave, uint8_t pos);
+    static QString GetToneString(Sound s);
 };
 
 #endif // SOUNDS_H

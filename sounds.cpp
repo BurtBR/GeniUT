@@ -92,3 +92,10 @@ QUrl Sounds::GetSoundPath(Sound s){
 Sounds::Sound Sounds::GetTone(uint8_t octave, uint8_t pos){
     return (Sounds::Sound)(((octave-2)*12)+pos);
 }
+
+QString Sounds::GetToneString(Sound s){
+    if(s <= Sounds::Sound::silence)
+        return _tonestr[(qsizetype)s];
+
+    return QString();
+}

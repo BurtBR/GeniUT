@@ -72,8 +72,10 @@ private:
     QThread *_threadFileHandler = nullptr;
     Gamemode _currentgamemode = Gamemode::Welcome;
     QVector<uint> _scoreToday, _scoreFile;
+    QVector<Sounds::Sound> _currentMusic;
     uint8_t _currentoctave = 4;
-    bool _isPlaying = false;
+    uint32_t _currentRound = 1;
+    bool _isPlaying = false, _isRecording = false;
 
     bool eventFilter(QObject *target, QEvent *event);
     bool StartThreadSoundPlayer();
@@ -84,6 +86,8 @@ private:
     void ResetShortcuts();
     void DeleteThread(QThread **threadptr);
     void SetScoreboard();
+    void SetCurrentRound(uint32_t value);
+    void StopMusic();
 
     void On_button1_Clicked();
     void On_button2_Clicked();
