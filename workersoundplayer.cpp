@@ -136,6 +136,8 @@ void WorkerSoundPlayer::TimerTimeout(){
         Sounds::GetOctavePosFromTone(_currentMusic[0], octave, pos);
         emit PressButton(octave, pos);
         PlayNow(_currentMusic[0]);
+    }else{
+        emit PressButton(0, 12);
     }
 
     _currentMusic.removeFirst();

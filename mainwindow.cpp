@@ -444,103 +444,161 @@ void MainWindow::ButtonClicked(ButtonType btn){
     case Gamemode::Creation:
         switch(btn){
         case ButtonType::Btn1:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 0);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn2:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 1);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn3:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 2);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn4:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 3);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn5:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 4);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn6:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 5);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn7:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 6);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn8:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 7);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn9:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 8);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn10:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 9);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn11:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 10);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn12:
-            if(_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
                 return;
+            }
             toneaux = Sounds::GetTone(_currentoctave, 11);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::BtnSilence:
-            if(_isRecording && !_isPlaying)
+            if(_isPlaying){
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(Sounds::Sound::silence) + ",");
             break;
         case ButtonType::BtnDeleteLast:
@@ -580,6 +638,8 @@ void MainWindow::ButtonClicked(ButtonType btn){
                 _ui->buttonRecord->setEnabled(false);
                 _ui->labelInfo->setText("Tocando");
                 _ui->buttonPlay->setText("Parar Música");
+                _ui->textConsole->moveCursor(QTextCursor::Start);
+                //_ui->textConsole->setFocus();
                 emit PlayTonesFromString(straux, _ui->spinClock->value());
             }else{
                 _ui->buttonRecord->setEnabled(true);
@@ -723,6 +783,11 @@ void MainWindow::MusicFinished(){
 }
 
 void MainWindow::MusicPressButton(uint8_t octave, uint8_t pos){
+
+    if(pos == 12){
+        ButtonClicked(ButtonType::BtnSilence);
+        return;
+    }
 
     _ui->comboOctave->setCurrentText(QString::number(octave));
 
