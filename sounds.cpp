@@ -82,7 +82,8 @@ const QVector<QUrl> Sounds::_soundPaths = {
     QUrl("qrc:/Sounds/NoMusicPlay.wav"),
     QUrl("qrc:/Sounds/YouMissed.wav"),
     QUrl("qrc:/Sounds/UnableToSave.wav"),
-    QUrl("qrc:/Sounds/InvalidMusicText.wav")
+    QUrl("qrc:/Sounds/InvalidMusicText.wav"),
+    QUrl("qrc:/Sounds/FileHandlingFail.wav")
 };
 
 Sounds::Sounds(){}

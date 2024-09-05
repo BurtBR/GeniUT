@@ -73,5 +73,6 @@
         <file>Sounds/YouMissed.wav</file>
         <file>Sounds/UnableToSave.wav</file>
         <file>Sounds/InvalidMusicText.wav</file>
+        <file>Sounds/FileHandlingFail.wav</file>
     </qresource>
 </RCC>

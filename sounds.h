@@ -25,6 +25,7 @@ public:
         youmissed,
         unabletosave,
         invalidmusictext,
+        filehandlingfail,
         _end
     };
 

@@ -208,7 +208,7 @@ void MainWindow::SetGamemode(Gamemode mode){
         _currentgamemode = Gamemode::Practice;
         _musicsInFolder = QDir("Musicas").entryInfoList(QDir::Files);
         if(!StartThreadFileHandler()){
-            emit PlaySoundNext(Sounds::Sound::unabletosave);
+            emit PlaySoundNext(Sounds::Sound::filehandlingfail);
             SetGamemode(Gamemode::Initial);
             return;
         }
@@ -465,7 +465,7 @@ void MainWindow::ButtonClicked(ButtonType btn){
             if(_musicsInFolder.size() == 1)
                 return;
             if(!StartThreadFileHandler()){
-                emit PlaySoundNext(Sounds::Sound::unabletosave);
+                emit PlaySoundNext(Sounds::Sound::filehandlingfail);
                 return;
             }
             this->setEnabled(false);
@@ -484,7 +484,7 @@ void MainWindow::ButtonClicked(ButtonType btn){
                 return;
 
             if(!StartThreadFileHandler()){
-                emit PlaySoundNext(Sounds::Sound::unabletosave);
+                emit PlaySoundNext(Sounds::Sound::filehandlingfail);
                 return;
             }
             this->setEnabled(false);
@@ -758,7 +758,7 @@ void MainWindow::ButtonClicked(ButtonType btn){
             filename = QFileDialog::getOpenFileName(this, "Abrir Musica", "Musicas", "(*.camusi)");
             if(filename.size()){
                 if(!StartThreadFileHandler()){
-                    emit PlaySoundNext(Sounds::Sound::unabletosave);
+                    emit PlaySoundNext(Sounds::Sound::filehandlingfail);
                     return;
                 }
                 this->setEnabled(false);
@@ -846,7 +846,7 @@ void MainWindow::ScoreFile(QVector<uint> score){
 
 void MainWindow::FileError(QString text){
     emit StopPlaying();
-    emit PlaySoundNext(Sounds::Sound::unabletosave);
+    emit PlaySoundNext(Sounds::Sound::filehandlingfail);
     _ui->labelInfo->setText(text);
 }
 
