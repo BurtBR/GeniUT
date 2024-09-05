@@ -118,11 +118,15 @@ private slots:
     void ScoreFile(QVector<uint> score);
     void FileError(QString text);
     void FileHandlingFinished();
+    void InvalidMusicStr();
+    void MusicFinished();
+    void MusicPressButton(uint8_t octave, uint8_t pos);
 
 signals:
     void PlaySoundNext(Sounds::Sound);
     void PlayTone(Sounds::Sound);
     void StopPlaying();
     void GetScoreFile();
+    void PlayTonesFromString(QString str, int clock);
 };
 #endif // MAINWINDOW_H

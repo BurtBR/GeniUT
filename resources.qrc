@@ -72,5 +72,6 @@
         <file>Sounds/NoMusicPractice.wav</file>
         <file>Sounds/YouMissed.wav</file>
         <file>Sounds/UnableToSave.wav</file>
+        <file>Sounds/InvalidMusicText.wav</file>
     </qresource>
 </RCC>

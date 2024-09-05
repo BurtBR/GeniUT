@@ -129,6 +129,10 @@ bool MainWindow::StartThreadSoundPlayer(){
     connect(this, &MainWindow::PlaySoundNext, worker, &WorkerSoundPlayer::PlayNext);
     connect(this, &MainWindow::PlayTone, worker, &WorkerSoundPlayer::PlayNow);
     connect(this, &MainWindow::StopPlaying, worker, &WorkerSoundPlayer::StopPlaying);
+    connect(this, &MainWindow::PlayTonesFromString, worker, &WorkerSoundPlayer::PlayTonesFromString);
+    connect(worker, &WorkerSoundPlayer::InvalidMusicStr, this, &MainWindow::InvalidMusicStr);
+    connect(worker, &WorkerSoundPlayer::MusicFinished, this, &MainWindow::MusicFinished);
+    connect(worker, &WorkerSoundPlayer::PressButton, this, &MainWindow::MusicPressButton);
 
     worker->moveToThread(_threadSoundPlayer);
     _threadSoundPlayer->start(QThread::HighestPriority);
@@ -347,6 +351,7 @@ void MainWindow::SetUIMode(UIMode mode){
         break;
 
     case UIMode::Creation:
+        _ui->buttonRecord->setEnabled(true);
         _ui->textConsole->setProperty("readOnly", false);
         _ui->textConsole->show();
         _ui->textScores->hide();
@@ -363,6 +368,7 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->labelRoundLabel->hide();
         _ui->labelRound->hide();
         _ui->buttonRecord->setText("Gravar");
+        _ui->buttonPlay->setText("Tocar");
         _ui->textConsole->clear();
         _currentMusic.clear();
         break;
@@ -381,6 +387,7 @@ void MainWindow::ButtonClicked(ButtonType btn){
     }
 
     Sounds::Sound toneaux;
+    QString straux;
 
     switch(_currentgamemode){
 
@@ -433,79 +440,103 @@ void MainWindow::ButtonClicked(ButtonType btn){
     case Gamemode::Creation:
         switch(btn){
         case ButtonType::Btn1:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 0);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn2:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 1);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn3:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 2);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn4:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 3);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn5:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 4);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn6:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 5);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn7:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 6);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn8:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 7);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn9:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 8);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn10:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 9);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn11:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 10);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::Btn12:
+            if(_isPlaying)
+                return;
             toneaux = Sounds::GetTone(_currentoctave, 11);
             emit PlayTone(toneaux);
             if(_isRecording)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(toneaux) + ",");
             break;
         case ButtonType::BtnSilence:
-            if(_isRecording)
+            if(_isRecording && !_isPlaying)
                 _ui->textConsole->insertPlainText(Sounds::GetToneString(Sounds::Sound::silence) + ",");
             break;
         case ButtonType::BtnDeleteLast:
@@ -533,6 +564,30 @@ void MainWindow::ButtonClicked(ButtonType btn){
                 _ui->buttonRecord->setText("Gravar");
             }
             break;
+
+        case ButtonType::BtnPlay:
+            straux = _ui->textConsole->toPlainText();
+            if(straux.size() < 2)
+                return;
+            _isPlaying ^= 1;
+            if(_isPlaying){
+                _isRecording = false;
+                _ui->buttonRecord->setText("Gravar");
+                _ui->buttonRecord->setEnabled(false);
+                _ui->labelInfo->setText("Tocando");
+                _ui->buttonPlay->setText("Parar Música");
+                emit PlayTonesFromString(straux, _ui->spinClock->value());
+            }else{
+                _ui->buttonRecord->setEnabled(true);
+                emit StopPlaying();
+                if(_isRecording)
+                    _ui->labelInfo->setText("Gravando");
+                else
+                    _ui->labelInfo->setText("Aguardando...");
+                _ui->buttonPlay->setText("Tocar");
+            }
+            break;
+
         default:
             break;
         }
@@ -620,6 +675,66 @@ void MainWindow::FileError(QString text){
 void MainWindow::FileHandlingFinished(){
     this->setEnabled(true);
     DeleteThread(&_threadFileHandler);
+}
+
+void MainWindow::InvalidMusicStr(){
+    emit PlaySoundNext(Sounds::Sound::invalidmusictext);
+}
+
+void MainWindow::MusicFinished(){
+    _isPlaying = false;
+    _ui->buttonRecord->setEnabled(true);
+    if(_isRecording)
+        _ui->labelInfo->setText("Gravando");
+    else
+        _ui->labelInfo->setText("Aguardando...");
+    _ui->buttonPlay->setText("Tocar");
+}
+
+void MainWindow::MusicPressButton(uint8_t octave, uint8_t pos){
+
+    _ui->comboOctave->setCurrentText(QString::number(octave));
+
+    switch(pos){
+    case 0:
+        _ui->button1->animateClick();
+        break;
+    case 1:
+        _ui->button2->animateClick();
+        break;
+    case 2:
+        _ui->button3->animateClick();
+        break;
+    case 3:
+        _ui->button4->animateClick();
+        break;
+    case 4:
+        _ui->button5->animateClick();
+        break;
+    case 5:
+        _ui->button6->animateClick();
+        break;
+    case 6:
+        _ui->button7->animateClick();
+        break;
+    case 7:
+        _ui->button8->animateClick();
+        break;
+    case 8:
+        _ui->button9->animateClick();
+        break;
+    case 9:
+        _ui->button10->animateClick();
+        break;
+    case 10:
+        _ui->button11->animateClick();
+        break;
+    case 11:
+        _ui->button12->animateClick();
+        break;
+    default:
+        break;
+    }
 }
 
 void MainWindow::On_button1_Clicked(){

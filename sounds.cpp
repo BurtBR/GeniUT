@@ -80,7 +80,8 @@ const QVector<QUrl> Sounds::_soundPaths = {
     QUrl("qrc:/Sounds/NoMusicPractice.wav"),
     QUrl("qrc:/Sounds/NoMusicPlay.wav"),
     QUrl("qrc:/Sounds/YouMissed.wav"),
-    QUrl("qrc:/Sounds/UnableToSave.wav")
+    QUrl("qrc:/Sounds/UnableToSave.wav"),
+    QUrl("qrc:/Sounds/InvalidMusicText.wav")
 };
 
 Sounds::Sounds(){}
@@ -98,4 +99,111 @@ QString Sounds::GetToneString(Sound s){
         return _tonestr[(qsizetype)s];
 
     return QString();
+}
+
+QVector<Sounds::Sound> Sounds::GetMusicFromString(QString str, bool &ok){
+
+    QVector<Sound> music;
+    ok = false;
+
+    if(str.size() <= 1)
+        return music;
+
+    if(str[str.size()-1] == ',')
+        str.removeLast();
+
+    QStringList list = str.split(",");
+    uint8_t octave, pos;
+
+    for(int i=0; i<list.size() ;i++){
+        switch(list[i].size()){
+        case 1:
+            if(list[i][0] == '_')
+                music.append(Sounds::Sound::silence);
+            else
+                return music;
+            break;
+        case 2:
+            octave = list[i][0].toLatin1() - '0';
+            if(octave < 2 || octave > 6)
+                return music;
+            switch(list[i][1].toLatin1()){
+            case 'C':
+                pos = 0;
+                break;
+            case 'D':
+                pos = 2;
+                break;
+            case 'E':
+                pos = 4;
+                break;
+            case 'F':
+                pos = 5;
+                break;
+            case 'G':
+                pos = 7;
+                break;
+            case 'A':
+                pos = 9;
+                break;
+            case 'B':
+                pos = 11;
+                break;
+            default:
+                return music;
+                break;
+            }
+            music.append(Sounds::GetTone(octave,pos));
+            break;
+        case 3:
+            if(list[i][2] != '#')
+                return music;
+            octave = list[i][0].toLatin1() - '0';
+            if(octave < 2 || octave > 6)
+                return music;
+            switch(list[i][1].toLatin1()){
+            case 'C':
+                pos = 1;
+                break;
+            case 'D':
+                pos = 3;
+                break;
+            case 'F':
+                pos = 6;
+                break;
+            case 'G':
+                pos = 8;
+                break;
+            case 'A':
+                pos = 10;
+                break;
+            default:
+                return music;
+                break;
+            }
+            music.append(Sounds::GetTone(octave,pos));
+            break;
+        default:
+            return music;
+            break;
+        }
+    }
+
+    ok = true;
+    return music;
+}
+
+bool Sounds::GetOctavePosFromTone(Sound s, uint8_t &octave, uint8_t &pos){
+
+    if(s > Sound::silence)
+        return false;
+    else if(s == Sound::silence){
+        pos = 13;
+        return true;
+    }
+
+    octave = (((uint)s)/12)+2;
+    pos = ((uint)s)%12;
+
+    return true;
 }

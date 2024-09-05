@@ -8,6 +8,7 @@ WorkerSoundPlayer::WorkerSoundPlayer(QObject *parent) : QObject{parent}{
         _mediaPlayerContinuous = new QMediaPlayer();
     }catch(...){
         throw "Unable to allocate memory for Media Player";
+        return;
     }
 
     try{
@@ -16,7 +17,22 @@ WorkerSoundPlayer::WorkerSoundPlayer(QObject *parent) : QObject{parent}{
         delete _mediaPlayerContinuous;
         _mediaPlayerContinuous = nullptr;
         throw "Unable to allocate memory for Audio Output";
+        return;
     }
+
+    try{
+        _timer = new QTimer(this);
+    }catch(...){
+        delete _mediaPlayerContinuous;
+        _mediaPlayerContinuous = nullptr;
+        delete audioOutput;
+        throw "Unable to allocate memory for Timer";
+        return;
+    }
+
+    _timer->setTimerType(Qt::PreciseTimer);
+    connect(this, &WorkerSoundPlayer::TimerStop, _timer, &QTimer::stop);
+    connect(_timer, &QTimer::timeout, this, &WorkerSoundPlayer::TimerTimeout);
 
     _mediaPlayerContinuous->setAudioOutput(audioOutput);
 
@@ -30,6 +46,11 @@ WorkerSoundPlayer::~WorkerSoundPlayer(){
     if(_mediaPlayerContinuous){
         delete _mediaPlayerContinuous;
         _mediaPlayerContinuous = nullptr;
+    }
+    if(_timer){
+        _timer->stop();
+        delete _timer;
+        _timer = nullptr;
     }
 }
 
@@ -71,8 +92,24 @@ void WorkerSoundPlayer::PlayNext(Sounds::Sound s){
 }
 
 void WorkerSoundPlayer::StopPlaying(){
+    emit TimerStop();
     emit PlayerStop();
     _soundQueue.clear();
+}
+
+void WorkerSoundPlayer::PlayTonesFromString(QString str, int clock){
+    bool ok;
+
+    _currentMusic = Sounds::GetMusicFromString(str, ok);
+
+    if(!ok){
+        emit InvalidMusicStr();
+        _currentMusic.clear();
+        emit MusicFinished();
+        return;
+    }
+
+    _timer->start(clock);
 }
 
 void WorkerSoundPlayer::PlayerMediaStatusChanged(QMediaPlayer::MediaStatus progress){
@@ -88,5 +125,23 @@ void WorkerSoundPlayer::PlayerMediaStatusChanged(QMediaPlayer::MediaStatus progr
 void WorkerSoundPlayer::MediaStatusChanged(QMediaPlayer::MediaStatus progress){
     if(progress == QMediaPlayer::EndOfMedia){
         sender()->deleteLater();
+    }
+}
+
+void WorkerSoundPlayer::TimerTimeout(){
+
+    uint8_t octave=0, pos=0;
+
+    if(_currentMusic[0] != Sounds::Sound::silence){
+        Sounds::GetOctavePosFromTone(_currentMusic[0], octave, pos);
+        emit PressButton(octave, pos);
+        PlayNow(_currentMusic[0]);
+    }
+
+    _currentMusic.removeFirst();
+
+    if(!_currentMusic.size()){
+        emit TimerStop();
+        emit MusicFinished();
     }
 }

@@ -24,6 +24,7 @@ public:
         nomusicplay,
         youmissed,
         unabletosave,
+        invalidmusictext,
         _end
     };
 
@@ -36,6 +37,8 @@ public:
     static QUrl GetSoundPath(Sound s);
     static Sound GetTone(uint8_t octave, uint8_t pos);
     static QString GetToneString(Sound s);
+    static QVector<Sound> GetMusicFromString(QString str, bool &ok);
+    static bool GetOctavePosFromTone(Sound s, uint8_t &octave, uint8_t &pos);
 };
 
 #endif // SOUNDS_H
