@@ -977,6 +977,11 @@ void MainWindow::SetCurrentRound(uint32_t value){
     _currentRound = value;
     _ui->labelRound->setText(QString::number(value));
     _currentPressedTones = 0;
+    _currentToneIndex = 0;
+    if(_currentMusic.size()){
+        while(_currentMusic[_currentToneIndex]==Sounds::Sound::silence) // File handling checks for music without tones
+            _currentToneIndex++;
+    }
 }
 
 void MainWindow::StopMusic(){
@@ -1082,9 +1087,6 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
     case Gamemode::Practice:
         if(_currentToneIndex >= _currentMusic.size()){
             SetCurrentRound(1);
-            _currentToneIndex = 0;
-            while(_currentMusic[_currentToneIndex]==Sounds::Sound::silence) // File handling checks for music without tones
-                _currentToneIndex++;
             SetTonesWhite();
             _isPlaying = true;
             _ui->textConsole->moveCursor(QTextCursor::Start);
@@ -1110,10 +1112,6 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
                 }
 
                 SetCurrentRound(_currentRound+1);
-                _currentToneIndex = 0;
-
-                while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
-                    _currentToneIndex++;
 
                 SetTonesWhite();
                 _isPlaying = true;
@@ -1248,9 +1246,6 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
         SetTonesWhite();
         _ui->textConsole->moveCursor(QTextCursor::Start);
         SetCurrentRound(1);
-        _currentToneIndex = 0;
-        while(_currentMusic[_currentToneIndex]==Sounds::Sound::silence) // File handling checks for music without tones
-            _currentToneIndex++;
         emit PlayTones(_currentMusic, clock, _currentRound, 1000);
         break;
 
