@@ -635,6 +635,17 @@ void MainWindow::ButtonClicked(ButtonType btn){
             _currentMusic.clear();
             emit OpenMusicFile(_musicsInFolder[_currentFileIndex].absoluteFilePath());
             break;
+        case ButtonType::BtnOpen:
+            filename = QFileDialog::getOpenFileName(this, "Abrir Musica", "Musicas", "(*.camusi)");
+            if(filename.size()){
+                if(!StartThreadFileHandler()){
+                    emit PlaySoundNext(Sounds::Sound::filehandlingfail);
+                    return;
+                }
+                this->setEnabled(false);
+                emit OpenMusicFile(filename);
+            }
+            break;
         default:
             break;
         }
@@ -1236,6 +1247,7 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
     case Gamemode::Practice:
         SetTonesWhite();
         _ui->textConsole->moveCursor(QTextCursor::Start);
+        SetCurrentRound(1);
         _currentToneIndex = 0;
         while(_currentMusic[_currentToneIndex]==Sounds::Sound::silence) // File handling checks for music without tones
             _currentToneIndex++;
