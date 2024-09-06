@@ -83,7 +83,8 @@ const QVector<QUrl> Sounds::_soundPaths = {
     QUrl("qrc:/Sounds/YouMissed.wav"),
     QUrl("qrc:/Sounds/UnableToSave.wav"),
     QUrl("qrc:/Sounds/InvalidMusicText.wav"),
-    QUrl("qrc:/Sounds/FileHandlingFail.wav")
+    QUrl("qrc:/Sounds/FileHandlingFail.wav"),
+    QUrl("qrc:/Sounds/MusicComplete.wav")
 };
 
 Sounds::Sounds(){}
@@ -96,6 +97,10 @@ Sounds::Sound Sounds::GetTone(uint8_t octave, uint8_t pos){
     return (Sounds::Sound)(((octave-2)*12)+pos);
 }
 
+uint8_t Sounds::GetOctave(Sound s){
+    return (((uint)s)/12)+2;
+}
+
 QString Sounds::GetToneString(Sound s){
     if(s <= Sounds::Sound::silence)
         return _tonestr[(qsizetype)s];
@@ -106,6 +111,7 @@ QString Sounds::GetToneString(Sound s){
 QVector<Sounds::Sound> Sounds::GetMusicFromString(QString str, bool &ok){
 
     QVector<Sound> music;
+    bool hasTones = false;
     ok = false;
 
     if(str.size() <= 1)
@@ -126,6 +132,7 @@ QVector<Sounds::Sound> Sounds::GetMusicFromString(QString str, bool &ok){
                 return music;
             break;
         case 2:
+            hasTones = true;
             octave = list[i][0].toLatin1() - '0';
             if(octave < 2 || octave > 6)
                 return music;
@@ -158,6 +165,7 @@ QVector<Sounds::Sound> Sounds::GetMusicFromString(QString str, bool &ok){
             music.append(Sounds::GetTone(octave,pos));
             break;
         case 3:
+            hasTones = true;
             if(list[i][2] != '#')
                 return music;
             octave = list[i][0].toLatin1() - '0';
@@ -191,6 +199,10 @@ QVector<Sounds::Sound> Sounds::GetMusicFromString(QString str, bool &ok){
         }
     }
 
+    if(!hasTones){
+        return music;
+    }
+
     ok = true;
     return music;
 }
@@ -222,6 +234,7 @@ bool Sounds::ValidateMusicStr(QString str){
     };
 
     unitedstates state = begin;
+    bool hasTones = false;
 
     for(int i=0; i<str.size() ;i++){
 
@@ -231,6 +244,7 @@ bool Sounds::ValidateMusicStr(QString str){
         case '4':
         case '5':
         case '6':
+            hasTones = true;
             if(state != begin)
                 return false;
             state = tone;
@@ -270,7 +284,7 @@ bool Sounds::ValidateMusicStr(QString str){
         }
     }
 
-    if(state != begin)
+    if(state != begin || !hasTones)
         return false;
 
     return true;

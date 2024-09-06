@@ -74,5 +74,6 @@
         <file>Sounds/UnableToSave.wav</file>
         <file>Sounds/InvalidMusicText.wav</file>
         <file>Sounds/FileHandlingFail.wav</file>
+        <file>Sounds/MusicComplete.wav</file>
     </qresource>
 </RCC>

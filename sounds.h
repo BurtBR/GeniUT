@@ -26,6 +26,7 @@ public:
         unabletosave,
         invalidmusictext,
         filehandlingfail,
+        musiccomplete,
         _end
     };
 
@@ -37,6 +38,7 @@ public:
     Sounds();
     static QUrl GetSoundPath(Sound s);
     static Sound GetTone(uint8_t octave, uint8_t pos);
+    static uint8_t GetOctave(Sound s);
     static QString GetToneString(Sound s);
     static QVector<Sound> GetMusicFromString(QString str, bool &ok);
     static bool GetOctavePosFromTone(Sound s, uint8_t &octave, uint8_t &pos);

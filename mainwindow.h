@@ -76,7 +76,7 @@ private:
     QVector<uint> _scoreToday, _scoreFile;
     QVector<Sounds::Sound> _currentMusic;
     uint8_t _currentoctave = 4;
-    uint32_t _currentRound = 1;
+    uint32_t _currentRound = 1, _currentPressedTones = 0, _currentToneIndex = 0;
     bool _isPlaying = false, _isRecording = false, _buttonFromPlaying = false;
     uint _currentFileIndex = 0;
 
@@ -91,6 +91,10 @@ private:
     void SetScoreboard();
     void SetCurrentRound(uint32_t value);
     void StopMusic();
+    void SetTonesRed();
+    void SetTonesGreen();
+    void SetTonesWhite();
+    void CheckGameState(Sounds::Sound tone);
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -132,7 +136,7 @@ signals:
     void StopPlaying();
     void GetScoreFile();
     void PlayTonesFromString(QString str, int clock, uint32_t limit = 0xFFFFFFFF);
-    void PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit = 0xFFFFFFFF);
+    void PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit = 0xFFFFFFFF, int delay = 0);
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
 };

@@ -30,10 +30,26 @@ WorkerSoundPlayer::WorkerSoundPlayer(QObject *parent) : QObject{parent}{
         return;
     }
 
+    try{
+        _delay = new QTimer(this);
+    }catch(...){
+        delete _mediaPlayerContinuous;
+        _mediaPlayerContinuous = nullptr;
+        delete audioOutput;
+        delete _timer;
+        throw "Unable to allocate memory for Timer";
+        return;
+    }
+
     _timer->setTimerType(Qt::PreciseTimer);
     connect(this, &WorkerSoundPlayer::TimerStop, _timer, &QTimer::stop);
     connect(this, &WorkerSoundPlayer::TimerStart, _timer, qOverload<int>(&QTimer::start));
     connect(_timer, &QTimer::timeout, this, &WorkerSoundPlayer::TimerTimeout);
+
+    connect(this, &WorkerSoundPlayer::TimerStop, _delay, &QTimer::stop);
+    connect(this, &WorkerSoundPlayer::DelayStart, _delay, qOverload<int>(&QTimer::start));
+    connect(_delay, &QTimer::timeout, this, &WorkerSoundPlayer::DelayEnd);
+    _delay->setSingleShot(true);
 
     _mediaPlayerContinuous->setAudioOutput(audioOutput);
 
@@ -52,6 +68,11 @@ WorkerSoundPlayer::~WorkerSoundPlayer(){
         _timer->stop();
         delete _timer;
         _timer = nullptr;
+    }
+    if(_delay){
+        _delay->stop();
+        delete _delay;
+        _delay = nullptr;
     }
 }
 
@@ -114,10 +135,14 @@ void WorkerSoundPlayer::PlayTonesFromString(QString str, int clock, uint32_t lim
     emit TimerStart(clock);
 }
 
-void WorkerSoundPlayer::PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit){
+void WorkerSoundPlayer::PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit, int delay){
     _currentMusic = music;
     _currentlimit = limit;
-    emit TimerStart(clock);
+    _currentclock = clock;
+    if(delay > 0)
+        emit DelayStart(delay);
+    else
+        emit TimerStart(clock);
 }
 
 void WorkerSoundPlayer::PlayerMediaStatusChanged(QMediaPlayer::MediaStatus progress){
@@ -161,4 +186,8 @@ void WorkerSoundPlayer::TimerTimeout(){
         emit TimerStop();
         emit MusicFinished();
     }
+}
+
+void WorkerSoundPlayer::DelayEnd(){
+    emit TimerStart(_currentclock);
 }

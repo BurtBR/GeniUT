@@ -14,7 +14,7 @@
    <string>GeniUT</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="resources.qrc">
     <normaloff>:/Images/ProgramIcon.png</normaloff>:/Images/ProgramIcon.png</iconset>
   </property>
   <property name="styleSheet">
@@ -496,6 +496,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <tabstop>buttonSilence</tabstop>
   <tabstop>textConsole</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

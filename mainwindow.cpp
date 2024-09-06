@@ -193,8 +193,8 @@ void MainWindow::SetGamemode(Gamemode mode){
         break;
 
     case Gamemode::Initial:
-        SetUIMode(UIMode::Initial);
         _currentgamemode = Gamemode::Initial;
+        SetUIMode(UIMode::Initial);
         emit PlaySoundNext(Sounds::Sound::choosegamemode);
         break;
 
@@ -205,8 +205,8 @@ void MainWindow::SetGamemode(Gamemode mode){
         }
         SetCurrentRound(1);
         _currentMusic.clear();
-        SetUIMode(UIMode::Practice);
         _currentgamemode = Gamemode::Practice;
+        SetUIMode(UIMode::Practice);
         _musicsInFolder = QDir("Musicas").entryInfoList(QDir::Files);
         if(!StartThreadFileHandler()){
             emit PlaySoundNext(Sounds::Sound::filehandlingfail);
@@ -224,14 +224,14 @@ void MainWindow::SetGamemode(Gamemode mode){
             return;
         }
         SetCurrentRound(1);
-        SetUIMode(UIMode::Playing);
         _currentgamemode = Gamemode::OneMusic;
+        SetUIMode(UIMode::Playing);
         break;
 
     case Gamemode::OneRandom:
         SetCurrentRound(1);
-        SetUIMode(UIMode::Playing);
         _currentgamemode = Gamemode::OneRandom;
+        SetUIMode(UIMode::Playing);
         break;
 
     case Gamemode::TwoMusic:
@@ -240,25 +240,25 @@ void MainWindow::SetGamemode(Gamemode mode){
             return;
         }
         SetCurrentRound(1);
-        SetUIMode(UIMode::Playing);
         _currentgamemode = Gamemode::TwoMusic;
+        SetUIMode(UIMode::Playing);
         break;
 
     case Gamemode::TwoRandom:
         SetCurrentRound(1);
-        SetUIMode(UIMode::Playing);
         _currentgamemode = Gamemode::TwoRandom;
+        SetUIMode(UIMode::Playing);
         break;
 
     case Gamemode::TwoMakeSong:
         SetCurrentRound(1);
-        SetUIMode(UIMode::PlayingCreate);
         _currentgamemode = Gamemode::TwoMakeSong;
+        SetUIMode(UIMode::PlayingCreate);
         break;
 
     case Gamemode::Creation:
-        SetUIMode(UIMode::Creation);
         _currentgamemode = Gamemode::Creation;
+        SetUIMode(UIMode::Creation);
         break;
 
     default:
@@ -311,6 +311,7 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonPlay->hide();
         _ui->labelRoundLabel->hide();
         _ui->labelRound->hide();
+        SetTonesGreen();
         break;
 
     case UIMode::Practice:
@@ -330,6 +331,7 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonPlay->hide();
         _ui->labelRoundLabel->show();
         _ui->labelRound->show();
+        SetTonesGreen();
         break;
 
     case UIMode::Playing:
@@ -347,6 +349,7 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonPlay->hide();
         _ui->labelRoundLabel->show();
         _ui->labelRound->show();
+        SetTonesGreen();
         break;
 
     case UIMode::PlayingCreate:
@@ -364,6 +367,7 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonPlay->hide();
         _ui->labelRoundLabel->show();
         _ui->labelRound->show();
+        SetTonesGreen();
         break;
 
     case UIMode::Creation:
@@ -386,6 +390,7 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonRecord->setText("Gravar");
         _ui->buttonPlay->setText("Tocar");
         _ui->textConsole->clear();
+        SetTonesWhite();
         break;
 
     default:
@@ -437,30 +442,161 @@ void MainWindow::ButtonClicked(ButtonType btn){
     case Gamemode::Practice:
         switch(btn){
         case ButtonType::Btn1:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 0);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn2:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 1);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn3:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 2);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn4:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 3);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn5:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 4);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn6:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 5);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn7:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 6);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn8:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 7);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn9:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 8);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn10:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 9);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn11:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 10);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::Btn12:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 11);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
             break;
         case ButtonType::BtnSilence:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::KeepAnchor);
+                return;
+            }
             break;
         case ButtonType::BtnUp:
             if(_musicsInFolder.size() == 1)
@@ -829,11 +965,163 @@ void MainWindow::SetScoreboard(){
 void MainWindow::SetCurrentRound(uint32_t value){
     _currentRound = value;
     _ui->labelRound->setText(QString::number(value));
+    _currentPressedTones = 0;
 }
 
 void MainWindow::StopMusic(){
     emit StopPlaying();
     _isPlaying = false;
+}
+
+void MainWindow::SetTonesRed(){
+    _ui->button1->setStyleSheet("");
+    _ui->button2->setStyleSheet("");
+    _ui->button3->setStyleSheet("");
+    _ui->button5->setStyleSheet("");
+    _ui->button6->setStyleSheet("");
+    _ui->button7->setStyleSheet("");
+    _ui->button10->setStyleSheet("");
+    _ui->widgetTones->setStyleSheet(""
+    "QPushButton{"
+        "font: 20pt \"Source Code Pro\";"
+        "color: rgb(0, 0, 0);"
+        "background-color: rgb(240, 150, 150);"
+    "}"
+    "QPushButton:pressed { background-color: red; }"
+    "QPushButton::disabled{"
+        "font: 20pt \"Source Code Pro\";"
+        "color: rgb(0, 0, 0);"
+        "background-color: rgb(50, 50, 50);"
+    "}");
+
+}
+
+void MainWindow::SetTonesGreen(){
+
+    QString style = "QPushButton{"
+                        "font: 20pt \"Source Code Pro\";"
+                        "color: rgb(0, 0, 0);"
+                        "background-color: rgb(150, 240, 150);"
+                    "}"
+                    "QPushButton:pressed { background-color: red; }"
+                    "QPushButton::disabled{"
+                        "font: 20pt \"Source Code Pro\";"
+                        "color: rgb(0, 0, 0);"
+                        "background-color: rgb(50, 50, 50);"
+                    "}";
+
+    if(_currentgamemode == Gamemode::Initial || _currentgamemode == Gamemode::Welcome){
+        _ui->button1->setStyleSheet(style);
+        _ui->button2->setStyleSheet(style);
+        _ui->button3->setStyleSheet(style);
+        _ui->button5->setStyleSheet(style);
+        _ui->button6->setStyleSheet(style);
+        _ui->button7->setStyleSheet(style);
+        _ui->button10->setStyleSheet(style);
+        style = "QPushButton{"
+                    "font: 20pt \"Source Code Pro\";"
+                    "color: rgb(0, 0, 0);"
+                    "background-color: rgb(240, 240, 240);"
+                "}"
+                "QPushButton:pressed { background-color: red; }"
+                "QPushButton::disabled{"
+                    "font: 20pt \"Source Code Pro\";"
+                    "color: rgb(0, 0, 0);"
+                    "background-color: rgb(50, 50, 50);"
+                "}";
+        _ui->widgetTones->setStyleSheet(style);
+    }else{
+        _ui->widgetTones->setStyleSheet(style);
+        style = "";
+        _ui->button1->setStyleSheet(style);
+        _ui->button2->setStyleSheet(style);
+        _ui->button3->setStyleSheet(style);
+        _ui->button5->setStyleSheet(style);
+        _ui->button6->setStyleSheet(style);
+        _ui->button7->setStyleSheet(style);
+        _ui->button10->setStyleSheet(style);
+    }
+}
+
+void MainWindow::SetTonesWhite(){
+    QString style = "QPushButton{"
+                        "font: 20pt \"Source Code Pro\";"
+                        "color: rgb(0, 0, 0);"
+                        "background-color: rgb(240, 240, 240);"
+                    "}"
+                    "QPushButton:pressed { background-color: red; }"
+                    "QPushButton::disabled{"
+                        "font: 20pt \"Source Code Pro\";"
+                        "color: rgb(0, 0, 0);"
+                        "background-color: rgb(50, 50, 50);"
+                    "}";
+    _ui->widgetTones->setStyleSheet(style);
+    style = "";
+    _ui->button1->setStyleSheet(style);
+    _ui->button2->setStyleSheet(style);
+    _ui->button3->setStyleSheet(style);
+    _ui->button5->setStyleSheet(style);
+    _ui->button6->setStyleSheet(style);
+    _ui->button7->setStyleSheet(style);
+    _ui->button10->setStyleSheet(style);
+}
+
+void MainWindow::CheckGameState(Sounds::Sound tone){
+    switch(_currentgamemode){
+    case Gamemode::Practice:
+        if(_currentToneIndex >= _currentMusic.size()){
+            SetCurrentRound(1);
+            _currentToneIndex = 0;
+            while(_currentMusic[_currentToneIndex]==Sounds::Sound::silence) // File handling checks for music without tones
+                _currentToneIndex++;
+            SetTonesWhite();
+            _isPlaying = true;
+            _ui->textConsole->moveCursor(QTextCursor::Start);
+            emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound,1000);
+            return;
+        }
+        if(tone == _currentMusic[_currentToneIndex]){
+            SetTonesGreen();
+            _currentPressedTones++;
+            _currentToneIndex++;
+
+            if(_currentPressedTones == _currentRound){
+
+                // Check if this is the last tone
+                while(_currentToneIndex < _currentMusic.size()){
+                    if(_currentMusic[_currentToneIndex] != Sounds::Sound::silence)
+                        break;
+                    _currentToneIndex++;
+                }
+                if(_currentToneIndex == _currentMusic.size()){
+                    emit PlaySoundNext(Sounds::Sound::musiccomplete);
+                    return;
+                }
+
+                SetCurrentRound(_currentRound+1);
+                _currentToneIndex = 0;
+
+                while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
+                    _currentToneIndex++;
+
+                SetTonesWhite();
+                _isPlaying = true;
+                _ui->textConsole->moveCursor(QTextCursor::Start);
+                emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+            }else{
+                while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
+                    _currentToneIndex++;
+                _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+            }
+        }else{
+            SetTonesRed();
+            emit PlaySoundNext(Sounds::Sound::youmissed);
+        }
+        break;
+
+    default:
+        break;
+    }
 }
 
 void MainWindow::OctaveChanged(){
@@ -864,6 +1152,11 @@ void MainWindow::MusicFinished(){
     _isPlaying = false;
 
     switch(_currentgamemode){
+    case Gamemode::Practice:
+        _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+        SetTonesGreen();
+        break;
+
     case Gamemode::Creation:
         _ui->buttonRecord->setEnabled(true);
         if(_isRecording)
@@ -941,8 +1234,12 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
 
     switch(_currentgamemode){
     case Gamemode::Practice:
+        SetTonesWhite();
         _ui->textConsole->moveCursor(QTextCursor::Start);
-        emit PlayTones(_currentMusic, clock, _currentRound);
+        _currentToneIndex = 0;
+        while(_currentMusic[_currentToneIndex]==Sounds::Sound::silence) // File handling checks for music without tones
+            _currentToneIndex++;
+        emit PlayTones(_currentMusic, clock, _currentRound, 1000);
         break;
 
     case Gamemode::Creation:
