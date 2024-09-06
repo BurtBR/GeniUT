@@ -408,6 +408,7 @@ void MainWindow::ButtonClicked(ButtonType btn){
 
     Sounds::Sound toneaux;
     QString straux, filename;
+    int intaux;
 
     switch(_currentgamemode){
 
@@ -865,6 +866,17 @@ void MainWindow::ButtonClicked(ButtonType btn){
 
         case ButtonType::BtnPlay:
             straux = _ui->textConsole->toPlainText();
+            intaux = _ui->textConsole->textCursor().position();
+            if(intaux!=0){
+                while(straux[intaux-1]!=',' && intaux < straux.size()){
+                    intaux++;
+                    _ui->textConsole->moveCursor(QTextCursor::Right, QTextCursor::MoveAnchor);
+                }
+                if(intaux == straux.size())
+                    _ui->textConsole->moveCursor(QTextCursor::Start);
+                else
+                    straux.remove(0,intaux);
+            }
             if(straux.size() < 2)
                 return;
             _isPlaying ^= 1;
@@ -874,7 +886,6 @@ void MainWindow::ButtonClicked(ButtonType btn){
                 _ui->buttonRecord->setEnabled(false);
                 _ui->labelInfo->setText("Tocando");
                 _ui->buttonPlay->setText("Parar Música");
-                _ui->textConsole->moveCursor(QTextCursor::Start);
                 emit PlayTonesFromString(straux, _ui->spinClock->value());
             }else{
                 _ui->buttonRecord->setEnabled(true);
@@ -1088,7 +1099,6 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
         if(_currentToneIndex >= _currentMusic.size()){
             SetCurrentRound(1);
             SetTonesWhite();
-            _isPlaying = true;
             _ui->textConsole->moveCursor(QTextCursor::Start);
             emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound,1000);
             return;
@@ -1114,7 +1124,6 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
                 SetCurrentRound(_currentRound+1);
 
                 SetTonesWhite();
-                _isPlaying = true;
                 _ui->textConsole->moveCursor(QTextCursor::Start);
                 emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
             }else{
@@ -1250,6 +1259,7 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
         break;
 
     case Gamemode::Creation:
+        _ui->textConsole->moveCursor(QTextCursor::Start);
         break;
 
     default:
