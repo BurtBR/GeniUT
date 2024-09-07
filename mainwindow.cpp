@@ -1284,13 +1284,15 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
                     SetTonesWhite();
                     _currentMusic.append(Sounds::GetRandomTone());
                     SetCurrentRound(_currentRound+1);
-                    emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+                    _ui->labelInfo->setText("Tocando...");
+                    emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 2000);
                     return;
                 }
 
                 SetCurrentRound(_currentRound+1);
 
                 SetTonesWhite();
+                _ui->labelInfo->setText("Tocando...");
                 emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
             }else{
                 while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
@@ -1299,6 +1301,7 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
             }
         }else{
             SetTonesRed();
+            _ui->labelInfo->setText("Você Errou");
             emit PlaySoundNext(Sounds::Sound::youmissed);
             _currentToneIndex = _currentMusic.size();
             CheckScore();
@@ -1372,6 +1375,7 @@ void MainWindow::MusicFinished(){
 
     case Gamemode::OneMusic:
         _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+        _ui->labelInfo->setText("Sua Vez!");
         SetTonesGreen();
         break;
 
@@ -1461,6 +1465,7 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
     case Gamemode::OneMusic:
         SetTonesWhite();
         SetCurrentRound(1);
+        _ui->labelInfo->setText("Tocando...");
         emit PlayTones(_currentMusic, clock, _currentRound, 1000);
         break;
 
