@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QDir>
 #include <QFileDialog>
+#include <QRandomGenerator>
 
 #include "workersoundplayer.h"
 #include "workerfilehandler.h"
@@ -95,6 +96,7 @@ private:
     void SetTonesGreen();
     void SetTonesWhite();
     void CheckGameState(Sounds::Sound tone);
+    void CheckScore();
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -135,6 +137,7 @@ signals:
     void PlayTone(Sounds::Sound);
     void StopPlaying();
     void GetScoreFile();
+    void SetScoreFile(QVector<uint> score);
     void PlayTonesFromString(QString str, int clock, uint32_t limit = 0xFFFFFFFF);
     void PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit = 0xFFFFFFFF, int delay = 0);
     void SaveMusicFile(QString filename, QString music, int clock);

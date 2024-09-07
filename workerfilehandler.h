@@ -14,6 +14,7 @@ public:
 
 public slots:
     void GetScoreFile();
+    void SetScoreFile(QVector<uint> score);
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
 

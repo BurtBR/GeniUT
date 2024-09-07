@@ -97,6 +97,10 @@ Sounds::Sound Sounds::GetTone(uint8_t octave, uint8_t pos){
     return (Sounds::Sound)(((octave-2)*12)+pos);
 }
 
+Sounds::Sound Sounds::GetRandomTone(){
+    return ((Sound)QRandomGenerator::global()->bounded((int)Sound::silence));
+}
+
 uint8_t Sounds::GetOctave(Sound s){
     return (((uint)s)/12)+2;
 }

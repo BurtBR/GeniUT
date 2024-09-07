@@ -166,6 +166,7 @@ bool MainWindow::StartThreadFileHandler(){
     connect(this, &MainWindow::GetScoreFile, worker, &WorkerFileHandler::GetScoreFile);
     connect(this, &MainWindow::SaveMusicFile, worker, &WorkerFileHandler::SaveMusicFile);
     connect(this, &MainWindow::OpenMusicFile, worker, &WorkerFileHandler::OpenMusicFile);
+    connect(this, &MainWindow::SetScoreFile, worker, &WorkerFileHandler::SetScoreFile);
     connect(worker, &WorkerFileHandler::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
     connect(worker, &WorkerFileHandler::FileHandlingError, this, &MainWindow::FileError);
     connect(worker, &WorkerFileHandler::ScoreFile, this, &MainWindow::ScoreFile);
@@ -223,9 +224,19 @@ void MainWindow::SetGamemode(Gamemode mode){
             emit PlaySoundNext(Sounds::Sound::nomusicplay);
             return;
         }
+        if(!StartThreadFileHandler()){
+            emit PlaySoundNext(Sounds::Sound::filehandlingfail);
+            SetGamemode(Gamemode::Initial);
+            return;
+        }
         SetCurrentRound(1);
+        _currentMusic.clear();
         _currentgamemode = Gamemode::OneMusic;
         SetUIMode(UIMode::Playing);
+        _musicsInFolder = QDir("Musicas").entryInfoList(QDir::Files);
+        _currentFileIndex = QRandomGenerator::global()->bounded(_musicsInFolder.size());
+        this->setEnabled(false);
+        emit OpenMusicFile(_musicsInFolder[_currentFileIndex].absoluteFilePath());
         break;
 
     case Gamemode::OneRandom:
@@ -653,6 +664,118 @@ void MainWindow::ButtonClicked(ButtonType btn){
         break;
 
     case Gamemode::OneMusic:
+        switch(btn){
+        case ButtonType::Btn1:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 0);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn2:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 1);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn3:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 2);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn4:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 3);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn5:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 4);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn6:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 5);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn7:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 6);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn8:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 7);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn9:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 8);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn10:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 9);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn11:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 10);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        case ButtonType::Btn12:
+            if(_buttonFromPlaying){
+                _buttonFromPlaying = false;
+                return;
+            }
+            toneaux = Sounds::GetTone(_currentoctave, 11);
+            emit PlayTone(toneaux);
+            CheckGameState(toneaux);
+            break;
+        default:
+            break;
+        }
         break;
 
     case Gamemode::OneRandom:
@@ -1137,9 +1260,81 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
         }
         break;
 
+    case Gamemode::OneMusic:
+        if(_currentToneIndex >= _currentMusic.size()){
+            SetGamemode(Gamemode::Initial);
+            return;
+        }
+        if(tone == _currentMusic[_currentToneIndex]){
+            SetTonesGreen();
+            _currentPressedTones++;
+            _currentToneIndex++;
+
+            if(_currentPressedTones == _currentRound){
+
+                // Check if this is the last tone
+                while(_currentToneIndex < _currentMusic.size()){
+                    if(_currentMusic[_currentToneIndex] != Sounds::Sound::silence)
+                        break;
+                    _currentToneIndex++;
+                }
+                if(_currentToneIndex == _currentMusic.size()){
+                    emit PlaySoundNext(Sounds::Sound::musiccomplete);
+                    _currentgamemode = Gamemode::OneRandom;
+                    SetTonesWhite();
+                    _currentMusic.append(Sounds::GetRandomTone());
+                    SetCurrentRound(_currentRound+1);
+                    emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+                    return;
+                }
+
+                SetCurrentRound(_currentRound+1);
+
+                SetTonesWhite();
+                emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+            }else{
+                while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
+                    _currentToneIndex++;
+                _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+            }
+        }else{
+            SetTonesRed();
+            emit PlaySoundNext(Sounds::Sound::youmissed);
+            _currentToneIndex = _currentMusic.size();
+            CheckScore();
+        }
+        break;
+
     default:
         break;
     }
+}
+
+void MainWindow::CheckScore(){
+    for(int i=0; i<_scoreToday.size() ;i++){
+        if(_currentRound > _scoreToday[i]){
+            _scoreToday.insert(i, _currentRound);
+            _scoreToday.removeLast();
+            emit PlaySoundNext(Sounds::Sound::newdailyrecord);
+            break;
+        }
+    }
+
+    for(int i=0; i<_scoreFile.size() ;i++){
+        if(_currentRound > _scoreFile[i]){
+            _scoreFile.insert(i, _currentRound);
+            _scoreFile.removeLast();
+            emit PlaySoundNext(Sounds::Sound::newdevicerecord);
+            if(!StartThreadFileHandler()){
+                emit PlaySoundNext(Sounds::Sound::unabletosave);
+            }else{
+                emit SetScoreFile(_scoreFile);
+            }
+            break;
+        }
+    }
+
+    SetScoreboard();
 }
 
 void MainWindow::OctaveChanged(){
@@ -1171,6 +1366,11 @@ void MainWindow::MusicFinished(){
 
     switch(_currentgamemode){
     case Gamemode::Practice:
+        _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+        SetTonesGreen();
+        break;
+
+    case Gamemode::OneMusic:
         _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
         SetTonesGreen();
         break;
@@ -1244,21 +1444,30 @@ void MainWindow::MusicPressButton(uint8_t octave, uint8_t pos){
 
 void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector){
 
-    _ui->labelInfo->setText(filename);
-    _ui->textConsole->clear();
-    _ui->textConsole->insertPlainText(music);
     _ui->spinClock->setValue(clock);
     _currentMusic = musicvector;
 
     switch(_currentgamemode){
     case Gamemode::Practice:
+        _ui->labelInfo->setText(filename);
+        _ui->textConsole->clear();
+        _ui->textConsole->insertPlainText(music);
         SetTonesWhite();
         _ui->textConsole->moveCursor(QTextCursor::Start);
         SetCurrentRound(1);
         emit PlayTones(_currentMusic, clock, _currentRound, 1000);
         break;
 
+    case Gamemode::OneMusic:
+        SetTonesWhite();
+        SetCurrentRound(1);
+        emit PlayTones(_currentMusic, clock, _currentRound, 1000);
+        break;
+
     case Gamemode::Creation:
+        _ui->labelInfo->setText(filename);
+        _ui->textConsole->clear();
+        _ui->textConsole->insertPlainText(music);
         _ui->textConsole->moveCursor(QTextCursor::Start);
         break;
 

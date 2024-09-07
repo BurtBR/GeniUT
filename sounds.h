@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QUrl>
+#include <QRandomGenerator>
 
 class Sounds{
 public:
@@ -38,6 +39,7 @@ public:
     Sounds();
     static QUrl GetSoundPath(Sound s);
     static Sound GetTone(uint8_t octave, uint8_t pos);
+    static Sound GetRandomTone();
     static uint8_t GetOctave(Sound s);
     static QString GetToneString(Sound s);
     static QVector<Sound> GetMusicFromString(QString str, bool &ok);
