@@ -286,9 +286,17 @@ void MainWindow::SetGamemode(Gamemode mode){
         break;
 
     case Gamemode::TwoMakeSong:
+        _isPlayer1 = true;
         SetCurrentRound(1);
         _currentgamemode = Gamemode::TwoMakeSong;
         SetUIMode(UIMode::PlayingCreate);
+        _currentMusic.clear();
+        SetTonesGreen();
+        _ui->spinClock->setValue(500);
+        _ui->comboOctave->setCurrentText("4");
+        SetTonesBlue();
+        _ui->labelInfo->setText("Jogador 1 escolha a primeira nota");
+        emit PlaySoundNext(Sounds::Sound::player1choosenote);
         break;
 
     case Gamemode::Creation:
@@ -688,6 +696,24 @@ void MainWindow::ButtonClicked(ButtonType btn){
         break;
 
     case Gamemode::TwoMakeSong:
+        switch(btn){
+        case ButtonType::BtnUp:
+            if(_ui->comboOctave->currentIndex() == (_ui->comboOctave->count()-1))
+                _ui->comboOctave->setCurrentIndex(0);
+            else
+                _ui->comboOctave->setCurrentIndex(_ui->comboOctave->currentIndex()+1);
+            return;
+            break;
+        case ButtonType::BtnDown:
+            if(_ui->comboOctave->currentIndex() == 0)
+                _ui->comboOctave->setCurrentIndex(_ui->comboOctave->count()-1);
+            else
+                _ui->comboOctave->setCurrentIndex(_ui->comboOctave->currentIndex()-1);
+            return;
+            break;
+        default:
+            break;
+        }
     case Gamemode::TwoMusic:
     case Gamemode::TwoRandom:
     case Gamemode::OneMusic:
@@ -1232,6 +1258,29 @@ void MainWindow::SetTonesWhite(){
     _ui->button10->setStyleSheet(style);
 }
 
+void MainWindow::SetTonesBlue(){
+    QString style = "QPushButton{"
+                    "font: 20pt \"Source Code Pro\";"
+                    "color: rgb(0, 0, 0);"
+                    "background-color: rgb(150, 150, 240);"
+                    "}"
+                    "QPushButton:pressed { background-color: red; }"
+                    "QPushButton::disabled{"
+                    "font: 20pt \"Source Code Pro\";"
+                    "color: rgb(0, 0, 0);"
+                    "background-color: rgb(50, 50, 50);"
+                    "}";
+    _ui->widgetTones->setStyleSheet(style);
+    style = "";
+    _ui->button1->setStyleSheet(style);
+    _ui->button2->setStyleSheet(style);
+    _ui->button3->setStyleSheet(style);
+    _ui->button5->setStyleSheet(style);
+    _ui->button6->setStyleSheet(style);
+    _ui->button7->setStyleSheet(style);
+    _ui->button10->setStyleSheet(style);
+}
+
 void MainWindow::CheckGameState(Sounds::Sound tone){
     switch(_currentgamemode){
     case Gamemode::Practice:
@@ -1455,6 +1504,43 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
         break;
 
     case Gamemode::TwoMakeSong:
+        if(_currentToneIndex > _currentMusic.size()){
+            SetGamemode(Gamemode::Initial);
+            return;
+        }
+        _currentPressedTones++;
+        if(_currentPressedTones == _currentRound){
+            _currentMusic.append(tone);
+            _isPlayer1 ^= 1;
+            SetCurrentRound(_currentRound+1);
+            SetTonesWhite();
+            _ui->labelInfo->setText("Tocando...");
+            emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+        }else if(tone == _currentMusic[_currentToneIndex]){
+            SetTonesGreen();
+            _currentToneIndex++;
+            if(_currentToneIndex < _currentMusic.size())
+                _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+            else{
+                SetTonesBlue();
+                if(_isPlayer1)
+                    _ui->labelInfo->setText("Jogador 1 escolha a nota");
+                else
+                    _ui->labelInfo->setText("Jogador 2 escolha a nota");
+            }
+        }else{
+            SetTonesRed();
+            _ui->labelInfo->setText("Você Errou");
+            emit PlaySoundNext(Sounds::Sound::youmissed);
+
+            if(_isPlayer1)
+                emit PlaySoundNext(Sounds::Sound::player2wins);
+            else
+                emit PlaySoundNext(Sounds::Sound::player1wins);
+
+            _currentToneIndex = _currentMusic.size()+1;
+            CheckScore();
+        }
         break;
 
     default:
@@ -1529,6 +1615,7 @@ void MainWindow::MusicFinished(){
         SetTonesGreen();
         break;
 
+    case Gamemode::TwoMakeSong:
     case Gamemode::TwoMusic:
     case Gamemode::TwoRandom:
         _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));

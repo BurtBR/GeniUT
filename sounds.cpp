@@ -84,7 +84,8 @@ const QVector<QUrl> Sounds::_soundPaths = {
     QUrl("qrc:/Sounds/UnableToSave.wav"),
     QUrl("qrc:/Sounds/InvalidMusicText.wav"),
     QUrl("qrc:/Sounds/FileHandlingFail.wav"),
-    QUrl("qrc:/Sounds/MusicComplete.wav")
+    QUrl("qrc:/Sounds/MusicComplete.wav"),
+    QUrl("qrc:/Sounds/Player1ChooseNote.wav")
 };
 
 Sounds::Sounds(){}
@@ -98,7 +99,10 @@ Sounds::Sound Sounds::GetTone(uint8_t octave, uint8_t pos){
 }
 
 Sounds::Sound Sounds::GetRandomTone(){
-    return ((Sound)QRandomGenerator::global()->bounded((int)Sound::silence));
+    // GENERATE RANDOM TONES FROM OCTAVE 4
+    int number = QRandomGenerator::global()->bounded(12);
+    number += (int)Sound::C4;
+    return ((Sound)number);
 }
 
 uint8_t Sounds::GetOctave(Sound s){

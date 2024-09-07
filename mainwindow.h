@@ -95,6 +95,7 @@ private:
     void SetTonesRed();
     void SetTonesGreen();
     void SetTonesWhite();
+    void SetTonesBlue();
     void CheckGameState(Sounds::Sound tone);
     void CheckScore();
 

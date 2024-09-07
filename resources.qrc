@@ -75,5 +75,6 @@
         <file>Sounds/InvalidMusicText.wav</file>
         <file>Sounds/FileHandlingFail.wav</file>
         <file>Sounds/MusicComplete.wav</file>
+        <file>Sounds/Player1ChooseNote.wav</file>
     </qresource>
 </RCC>

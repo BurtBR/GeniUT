@@ -28,6 +28,7 @@ public:
         invalidmusictext,
         filehandlingfail,
         musiccomplete,
+        player1choosenote,
         _end
     };
 
