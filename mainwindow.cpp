@@ -256,15 +256,33 @@ void MainWindow::SetGamemode(Gamemode mode){
             emit PlaySoundNext(Sounds::Sound::nomusicplay);
             return;
         }
+        if(!StartThreadFileHandler()){
+            emit PlaySoundNext(Sounds::Sound::filehandlingfail);
+            SetGamemode(Gamemode::Initial);
+            return;
+        }
+        _currentMusic.clear();
+        _isPlayer1 = true;
         SetCurrentRound(1);
         _currentgamemode = Gamemode::TwoMusic;
         SetUIMode(UIMode::Playing);
+        _musicsInFolder = QDir("Musicas").entryInfoList(QDir::Files);
+        _currentFileIndex = QRandomGenerator::global()->bounded(_musicsInFolder.size());
+        this->setEnabled(false);
+        emit OpenMusicFile(_musicsInFolder[_currentFileIndex].absoluteFilePath());
         break;
 
     case Gamemode::TwoRandom:
+        _isPlayer1 = true;
         SetCurrentRound(1);
         _currentgamemode = Gamemode::TwoRandom;
         SetUIMode(UIMode::Playing);
+        _currentMusic.clear();
+        _currentMusic.append(Sounds::GetRandomTone());
+        SetTonesWhite();
+        _ui->spinClock->setValue(500);
+        _ui->labelInfo->setText("Tocando...");
+        emit PlayTones(_currentMusic, 500, _currentRound, 1000);
         break;
 
     case Gamemode::TwoMakeSong:
@@ -669,6 +687,9 @@ void MainWindow::ButtonClicked(ButtonType btn){
         }
         break;
 
+    case Gamemode::TwoMakeSong:
+    case Gamemode::TwoMusic:
+    case Gamemode::TwoRandom:
     case Gamemode::OneMusic:
     case Gamemode::OneRandom:
         switch(btn){
@@ -783,15 +804,6 @@ void MainWindow::ButtonClicked(ButtonType btn){
         default:
             break;
         }
-        break;
-
-    case Gamemode::TwoMusic:
-        break;
-
-    case Gamemode::TwoRandom:
-        break;
-
-    case Gamemode::TwoMakeSong:
         break;
 
     case Gamemode::Creation:
@@ -1345,6 +1357,106 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
         }
         break;
 
+    case Gamemode::TwoMusic:
+        if(_currentToneIndex >= _currentMusic.size()){
+            SetGamemode(Gamemode::Initial);
+            return;
+        }
+        if(tone == _currentMusic[_currentToneIndex]){
+            SetTonesGreen();
+            _currentPressedTones++;
+            _currentToneIndex++;
+
+            if(_currentPressedTones == _currentRound){
+
+                _isPlayer1 ^= 1;
+
+                // Check if this is the last tone
+                while(_currentToneIndex < _currentMusic.size()){
+                    if(_currentMusic[_currentToneIndex] != Sounds::Sound::silence)
+                        break;
+                    _currentToneIndex++;
+                }
+                if(_currentToneIndex == _currentMusic.size()){
+                    emit PlaySoundNext(Sounds::Sound::musiccomplete);
+                    _currentgamemode = Gamemode::TwoRandom;
+                    SetTonesWhite();
+                    _currentMusic.append(Sounds::GetRandomTone());
+                    SetCurrentRound(_currentRound+1);
+                    _ui->labelInfo->setText("Tocando...");
+                    emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 2000);
+                    return;
+                }
+
+                SetCurrentRound(_currentRound+1);
+
+                SetTonesWhite();
+                _ui->labelInfo->setText("Tocando...");
+                emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+            }else{
+                while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
+                    _currentToneIndex++;
+                _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+            }
+        }else{
+            SetTonesRed();
+            _ui->labelInfo->setText("Você Errou");
+            emit PlaySoundNext(Sounds::Sound::youmissed);
+
+            if(_isPlayer1)
+                emit PlaySoundNext(Sounds::Sound::player2wins);
+            else
+                emit PlaySoundNext(Sounds::Sound::player1wins);
+
+            _currentToneIndex = _currentMusic.size();
+            CheckScore();
+        }
+        break;
+
+    case Gamemode::TwoRandom:
+        if(_currentToneIndex >= _currentMusic.size()){
+            SetGamemode(Gamemode::Initial);
+            return;
+        }
+        if(tone == _currentMusic[_currentToneIndex]){
+            SetTonesGreen();
+            _currentPressedTones++;
+            _currentToneIndex++;
+
+            if(_currentPressedTones == _currentRound){
+
+                _isPlayer1 ^= 1;
+
+                SetCurrentRound(_currentRound+1);
+
+                SetTonesWhite();
+                _ui->labelInfo->setText("Tocando...");
+                _currentMusic.append(Sounds::GetRandomTone());
+                emit PlayTones(_currentMusic, _ui->spinClock->value(), _currentRound, 1000);
+            }else{
+                //This check is needed in case this mode comes after music mode
+                while(_currentMusic[_currentToneIndex] == Sounds::Sound::silence)
+                    _currentToneIndex++;
+                _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+            }
+        }else{
+            SetTonesRed();
+            _ui->labelInfo->setText("Você Errou");
+            emit PlaySoundNext(Sounds::Sound::youmissed);
+
+            if(_isPlayer1)
+                emit PlaySoundNext(Sounds::Sound::player2wins);
+            else
+                emit PlaySoundNext(Sounds::Sound::player1wins);
+
+            _currentToneIndex = _currentMusic.size();
+            CheckScore();
+        }
+        break;
+
+    case Gamemode::TwoMakeSong:
+        break;
+
     default:
         break;
     }
@@ -1415,6 +1527,16 @@ void MainWindow::MusicFinished(){
         _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
         _ui->labelInfo->setText("Sua Vez!");
         SetTonesGreen();
+        break;
+
+    case Gamemode::TwoMusic:
+    case Gamemode::TwoRandom:
+        _ui->comboOctave->setCurrentText(QString::number(Sounds::GetOctave(_currentMusic[_currentToneIndex])));
+        SetTonesGreen();
+        if(_isPlayer1)
+            _ui->labelInfo->setText("Vez do Jogador 1");
+        else
+            _ui->labelInfo->setText("Vez do Jogador 2");
         break;
 
     case Gamemode::Creation:
@@ -1500,6 +1622,7 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
         emit PlayTones(_currentMusic, clock, _currentRound, 1000);
         break;
 
+    case Gamemode::TwoMusic:
     case Gamemode::OneMusic:
         SetTonesWhite();
         SetCurrentRound(1);

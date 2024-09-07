@@ -78,7 +78,7 @@ private:
     QVector<Sounds::Sound> _currentMusic;
     uint8_t _currentoctave = 4;
     uint32_t _currentRound = 1, _currentPressedTones = 0, _currentToneIndex = 0;
-    bool _isPlaying = false, _isRecording = false, _buttonFromPlaying = false;
+    bool _isPlaying = false, _isRecording = false, _buttonFromPlaying = false, _isPlayer1 = true;;
     uint _currentFileIndex = 0;
 
     bool eventFilter(QObject *target, QEvent *event);
