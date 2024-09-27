@@ -12,6 +12,7 @@ class WorkerGPIO : public QObject{
 public:
     WorkerGPIO(QObject *parent = nullptr);
     ~WorkerGPIO();
+    void GPIO_Init();
 
 signals:
 };

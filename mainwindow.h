@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QKeyEvent>
 #include <QDir>
+#include <QFileInfo>
 #include <QFileDialog>
 #include <QRandomGenerator>
 
@@ -76,6 +77,10 @@ class MainWindow : public QMainWindow{
     };
 
 private:
+    #if _IS_PIODEVICE
+        QThread *_threadGPIO = nullptr;
+        bool StartThreadGPIO();
+    #endif
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;

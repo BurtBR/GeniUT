@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
 MainWindow::~MainWindow(){
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);
+    #if _IS_PIODEVICE
+        DeleteThread(&_threadGPIO);
+    #endif
     delete _ui;
 }
 
@@ -56,6 +59,11 @@ bool MainWindow::Init(){
 
     if(!StartThreadFileHandler())
         return false;
+
+    #if _IS_PIODEVICE
+        if(!StartThreadGPIO())
+            return false;
+    #endif
 
     SetGamemode(Gamemode::Welcome);
 
@@ -103,6 +111,39 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
 
     return QMainWindow::eventFilter(target, event);
 }
+
+#if _IS_PIODEVICE
+bool MainWindow::StartThreadGPIO(){
+    if(!QFileInfo::exists("/sys/class/gpio/export"))
+        return false;
+
+    if(_threadGPIO)
+        return true;
+
+    WorkerGPIO *worker;
+
+    try{
+        _threadGPIO = new QThread();
+    }catch(...){
+        return false;
+    }
+
+    try{
+        worker = new WorkerGPIO;
+    }catch(...){
+        delete _threadGPIO;
+        _threadGPIO = nullptr;
+        return false;
+    }
+
+    connect(_threadGPIO, &QThread::finished, worker, &WorkerGPIO::deleteLater);
+
+    worker->moveToThread(_threadGPIO);
+    _threadGPIO->start();
+
+    return true;
+}
+#endif
 
 bool MainWindow::StartThreadSoundPlayer(){
 
