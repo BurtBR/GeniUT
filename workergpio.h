@@ -9,10 +9,14 @@
 class WorkerGPIO : public QObject{
     Q_OBJECT
 
+private:
+    static const QVector<const char*> _pins;
+    void UnexportPins();
+
 public:
     WorkerGPIO(QObject *parent = nullptr);
     ~WorkerGPIO();
-    void GPIO_Init();
+    static bool GPIO_Init();
 
 signals:
 };

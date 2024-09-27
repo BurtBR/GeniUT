@@ -114,8 +114,10 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
 
 #if _IS_PIODEVICE
 bool MainWindow::StartThreadGPIO(){
-    if(!QFileInfo::exists("/sys/class/gpio/export"))
+
+    if(!WorkerGPIO::GPIO_Init()){
         return false;
+    }
 
     if(_threadGPIO)
         return true;
