@@ -12,8 +12,8 @@
 #include "workerfilehandler.h"
 
 #ifdef Q_OS_LINUX
-    #if QFileInfo::exists("/sys/class/gpio/export")
-        #define _IS_PIODEVICE true
+    #define _IS_PIODEVICE true
+    #if _IS_PIODEVICE
         #include "workergpio.h"
     #endif
 #endif
