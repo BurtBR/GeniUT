@@ -4,6 +4,11 @@
 #include <QMessageBox>
 
 int main(int argc, char *argv[]){
+
+#ifdef Q_OS_LINUX
+    qputenv("QT_MEDIA_BACKEND", "gstreamer");
+#endif
+
     QApplication a(argc, argv);
     MainWindow w;
     w.showMaximized();

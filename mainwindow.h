@@ -11,6 +11,13 @@
 #include "workersoundplayer.h"
 #include "workerfilehandler.h"
 
+#ifdef Q_OS_LINUX
+    #if QFileInfo::exists("/sys/class/gpio/export")
+        #define _IS_PIODEVICE true
+        #include "workergpio.h"
+    #endif
+#endif
+
 // DEBUG
 #include <QDebug>
 // DEBUG
