@@ -24,6 +24,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     connect(_ui->buttonBack, &QPushButton::clicked, this, &MainWindow::On_buttonBack_Clicked);
     connect(_ui->comboOctave, &QComboBox::currentIndexChanged, this, &MainWindow::OctaveChanged);
 
+#if _IS_PIODEVICE
+    connect(_ui->button1, &QPushButton::pressed, this, &MainWindow::On_button1_Pressed);
+    connect(_ui->button2, &QPushButton::pressed, this, &MainWindow::On_button2_Pressed);
+    connect(_ui->button3, &QPushButton::pressed, this, &MainWindow::On_button3_Pressed);
+    connect(_ui->button4, &QPushButton::pressed, this, &MainWindow::On_button4_Pressed);
+    connect(_ui->button5, &QPushButton::pressed, this, &MainWindow::On_button5_Pressed);
+    connect(_ui->button6, &QPushButton::pressed, this, &MainWindow::On_button6_Pressed);
+    connect(_ui->button7, &QPushButton::pressed, this, &MainWindow::On_button7_Pressed);
+    connect(_ui->button8, &QPushButton::pressed, this, &MainWindow::On_button8_Pressed);
+    connect(_ui->button9, &QPushButton::pressed, this, &MainWindow::On_button9_Pressed);
+    connect(_ui->button10, &QPushButton::pressed, this, &MainWindow::On_button10_Pressed);
+    connect(_ui->button11, &QPushButton::pressed, this, &MainWindow::On_button11_Pressed);
+    connect(_ui->button12, &QPushButton::pressed, this, &MainWindow::On_button12_Pressed);
+    connect(_ui->button1, &QPushButton::released, this, &MainWindow::On_button1_Released);
+    connect(_ui->button2, &QPushButton::released, this, &MainWindow::On_button2_Released);
+    connect(_ui->button3, &QPushButton::released, this, &MainWindow::On_button3_Released);
+    connect(_ui->button4, &QPushButton::released, this, &MainWindow::On_button4_Released);
+    connect(_ui->button5, &QPushButton::released, this, &MainWindow::On_button5_Released);
+    connect(_ui->button6, &QPushButton::released, this, &MainWindow::On_button6_Released);
+    connect(_ui->button7, &QPushButton::released, this, &MainWindow::On_button7_Released);
+    connect(_ui->button8, &QPushButton::released, this, &MainWindow::On_button8_Released);
+    connect(_ui->button9, &QPushButton::released, this, &MainWindow::On_button9_Released);
+    connect(_ui->button10, &QPushButton::released, this, &MainWindow::On_button10_Released);
+    connect(_ui->button11, &QPushButton::released, this, &MainWindow::On_button11_Released);
+    connect(_ui->button12, &QPushButton::released, this, &MainWindow::On_button12_Released);
+#endif
+
     _ui->comboOctave->addItem("2");
     _ui->comboOctave->addItem("3");
     _ui->comboOctave->addItem("4");
@@ -136,6 +163,8 @@ bool MainWindow::StartThreadGPIO(){
 
     connect(_threadGPIO, &QThread::finished, worker, &WorkerGPIO::deleteLater);
     connect(this, &MainWindow::GPIOInit, worker, &WorkerGPIO::Init);
+    connect(this, &MainWindow::GPIOTurnOn, worker, &WorkerGPIO::TurnOn);
+    connect(this, &MainWindow::GPIOTurnOff, worker, &WorkerGPIO::TurnOff);
     connect(worker, &WorkerGPIO::GPIOError, this, &MainWindow::GPIOError);
 
     worker->moveToThread(_threadGPIO);
@@ -149,6 +178,102 @@ bool MainWindow::StartThreadGPIO(){
 void MainWindow::GPIOError(QString text){
     // SOM DE FALHA DE GPIO
     DeleteThread(&_threadGPIO);
+}
+
+void MainWindow::On_button1_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED1);
+}
+
+void MainWindow::On_button2_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED2);
+}
+
+void MainWindow::On_button3_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED3);
+}
+
+void MainWindow::On_button4_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED4);
+}
+
+void MainWindow::On_button5_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED5);
+}
+
+void MainWindow::On_button6_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED6);
+}
+
+void MainWindow::On_button7_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED7);
+}
+
+void MainWindow::On_button8_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED8);
+}
+
+void MainWindow::On_button9_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED9);
+}
+
+void MainWindow::On_button10_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED10);
+}
+
+void MainWindow::On_button11_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED11);
+}
+
+void MainWindow::On_button12_Pressed(){
+    emit GPIOTurnOn(WorkerGPIO::LED::LED12);
+}
+
+void MainWindow::On_button1_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED1);
+}
+
+void MainWindow::On_button2_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED2);
+}
+
+void MainWindow::On_button3_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED3);
+}
+
+void MainWindow::On_button4_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED4);
+}
+
+void MainWindow::On_button5_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED5);
+}
+
+void MainWindow::On_button6_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED6);
+}
+
+void MainWindow::On_button7_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED7);
+}
+
+void MainWindow::On_button8_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED8);
+}
+
+void MainWindow::On_button9_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED9);
+}
+
+void MainWindow::On_button10_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED10);
+}
+
+void MainWindow::On_button11_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED11);
+}
+
+void MainWindow::On_button12_Released(){
+    emit GPIOTurnOff(WorkerGPIO::LED::LED12);
 }
 #endif
 

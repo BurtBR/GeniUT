@@ -131,6 +131,32 @@ private:
     void On_buttonSave_Clicked();
     void On_buttonOpen_Clicked();
     void On_buttonBack_Clicked();
+#if _IS_PIODEVICE
+    void On_button1_Pressed();
+    void On_button2_Pressed();
+    void On_button3_Pressed();
+    void On_button4_Pressed();
+    void On_button5_Pressed();
+    void On_button6_Pressed();
+    void On_button7_Pressed();
+    void On_button8_Pressed();
+    void On_button9_Pressed();
+    void On_button10_Pressed();
+    void On_button11_Pressed();
+    void On_button12_Pressed();
+    void On_button1_Released();
+    void On_button2_Released();
+    void On_button3_Released();
+    void On_button4_Released();
+    void On_button5_Released();
+    void On_button6_Released();
+    void On_button7_Released();
+    void On_button8_Released();
+    void On_button9_Released();
+    void On_button10_Released();
+    void On_button11_Released();
+    void On_button12_Released();
+#endif
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -161,5 +187,7 @@ signals:
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
     void GPIOInit();
+    void GPIOTurnOn(WorkerGPIO::LED btn);
+    void GPIOTurnOff(WorkerGPIO::LED btn);
 };
 #endif // MAINWINDOW_H
