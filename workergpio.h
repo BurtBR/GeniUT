@@ -2,19 +2,16 @@
 #define WORKERGPIO_H
 
 #include <QObject>
-#include <QFileInfo>
 #include <QFile>
-#include <QTextStream>
 
 // TEMP
-#include <QThread>
+#include <QDebug>
 
 class WorkerGPIO : public QObject{
     Q_OBJECT
 
 private:
-    static const QVector<const char*> _pins;
-    static void UnexportPins();
+    static uint32_t* _gpio_base;
 
 public:
     WorkerGPIO(QObject *parent = nullptr);
