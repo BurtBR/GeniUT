@@ -16,9 +16,13 @@ private:
 public:
     WorkerGPIO(QObject *parent = nullptr);
     ~WorkerGPIO();
-    static bool GPIO_Init();
+    bool GPIO_Init();
+
+public slots:
+    void Init();
 
 signals:
+    void GPIOError(QString);
 };
 
 #endif // WORKERGPIO_H

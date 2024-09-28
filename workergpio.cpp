@@ -76,6 +76,11 @@ WorkerGPIO::~WorkerGPIO(){
         QFile(_GPIO_MEM_FILE).unmap((uchar*)_gpio_base);
 }
 
+void WorkerGPIO::Init(){
+    if(!GPIO_Init())
+        emit GPIOError("Failed to initialize GPIO");
+}
+
 bool WorkerGPIO::GPIO_Init(){
     QFile fp(_GPIO_MEM_FILE);
 

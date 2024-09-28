@@ -76,11 +76,13 @@ class MainWindow : public QMainWindow{
         BtnDeleteLast
     };
 
+#if _IS_PIODEVICE
 private:
-    #if _IS_PIODEVICE
-        QThread *_threadGPIO = nullptr;
-        bool StartThreadGPIO();
-    #endif
+    QThread *_threadGPIO = nullptr;
+    bool StartThreadGPIO();
+#endif
+
+private:
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
@@ -90,7 +92,7 @@ private:
     QVector<Sounds::Sound> _currentMusic;
     uint8_t _currentoctave = 4;
     uint32_t _currentRound = 1, _currentPressedTones = 0, _currentToneIndex = 0;
-    bool _isPlaying = false, _isRecording = false, _buttonFromPlaying = false, _isPlayer1 = true;;
+    bool _isPlaying = false, _isRecording = false, _buttonFromPlaying = false, _isPlayer1 = true;
     uint _currentFileIndex = 0;
 
     bool eventFilter(QObject *target, QEvent *event);
@@ -144,6 +146,9 @@ private slots:
     void MusicFinished();
     void MusicPressButton(uint8_t octave, uint8_t pos);
     void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
+#if _IS_PIODEVICE
+    void GPIOError(QString text);
+#endif
 
 signals:
     void PlaySoundNext(Sounds::Sound);
@@ -155,5 +160,6 @@ signals:
     void PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit = 0xFFFFFFFF, int delay = 0);
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
+    void GPIOInit();
 };
 #endif // MAINWINDOW_H

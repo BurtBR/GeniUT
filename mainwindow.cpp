@@ -115,10 +115,6 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
 #if _IS_PIODEVICE
 bool MainWindow::StartThreadGPIO(){
 
-    if(!WorkerGPIO::GPIO_Init()){
-        return false;
-    }
-
     if(_threadGPIO)
         return true;
 
@@ -139,11 +135,20 @@ bool MainWindow::StartThreadGPIO(){
     }
 
     connect(_threadGPIO, &QThread::finished, worker, &WorkerGPIO::deleteLater);
+    connect(this, &MainWindow::GPIOInit, worker, &WorkerGPIO::Init);
+    connect(worker, &WorkerGPIO::GPIOError, this, &MainWindow::GPIOError);
 
     worker->moveToThread(_threadGPIO);
     _threadGPIO->start();
 
+    emit GPIOInit();
+
     return true;
+}
+
+void MainWindow::GPIOError(QString text){
+    // SOM DE FALHA DE GPIO
+    DeleteThread(&_threadGPIO);
 }
 #endif
 
