@@ -65,6 +65,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
 }
 
 MainWindow::~MainWindow(){
+    if(_timerBlink){
+        delete _timerBlink;
+        _timerBlink = nullptr;
+    }
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);
     #ifdef _IS_PIODEVICE
@@ -91,6 +95,15 @@ bool MainWindow::Init(){
         if(!StartThreadGPIO())
             return false;
     #endif
+
+    try{
+        _timerBlink = new QTimer();
+        connect(this, &MainWindow::TimerBlinkStart, _timerBlink, qOverload<int>(&QTimer::start));
+        connect(this, &MainWindow::StopPlaying, _timerBlink, &QTimer::stop);
+        connect(_timerBlink, &QTimer::timeout, this, &MainWindow::TimerBlinkTimeout);
+    }catch(...){
+        _timerBlink = nullptr;
+    }
 
     SetGamemode(Gamemode::Welcome);
 
@@ -500,6 +513,8 @@ void MainWindow::SetUIMode(UIMode mode){
     switch(mode){
 
     case UIMode::Initial:
+        SetTonesRandom();
+        emit TimerBlinkStart(1000);
         _ui->labelInfo->setText("Aguardando...");
         _ui->button1->setText("Praticar");
         _ui->button2->setText("1 Jogador\nMúsica");
@@ -527,7 +542,6 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonPlay->hide();
         _ui->labelRoundLabel->hide();
         _ui->labelRound->hide();
-        SetTonesGreen();
         break;
 
     case UIMode::Practice:
@@ -1342,10 +1356,15 @@ void MainWindow::SetTonesRed(){
     _ui->button1->setStyleSheet("");
     _ui->button2->setStyleSheet("");
     _ui->button3->setStyleSheet("");
+    _ui->button4->setStyleSheet("");
     _ui->button5->setStyleSheet("");
     _ui->button6->setStyleSheet("");
     _ui->button7->setStyleSheet("");
+    _ui->button8->setStyleSheet("");
+    _ui->button9->setStyleSheet("");
     _ui->button10->setStyleSheet("");
+    _ui->button11->setStyleSheet("");
+    _ui->button12->setStyleSheet("");
     _ui->widgetTones->setStyleSheet(""
     "QPushButton{"
         "font: 20pt \"Source Code Pro\";"
@@ -1376,39 +1395,20 @@ void MainWindow::SetTonesGreen(){
                         "color: rgb(0, 0, 0);"
                         "background-color: rgb(50, 50, 50);"
                     "}";
-
-    if(_currentgamemode == Gamemode::Initial || _currentgamemode == Gamemode::Welcome){
-        _ui->button1->setStyleSheet(style);
-        _ui->button2->setStyleSheet(style);
-        _ui->button3->setStyleSheet(style);
-        _ui->button5->setStyleSheet(style);
-        _ui->button6->setStyleSheet(style);
-        _ui->button7->setStyleSheet(style);
-        _ui->button10->setStyleSheet(style);
-        style = "QPushButton{"
-                    "font: 20pt \"Source Code Pro\";"
-                    "color: rgb(0, 0, 0);"
-                    "background-color: rgb(240, 240, 240);"
-                    "border-radius:50px;"
-                "}"
-                "QPushButton:pressed { background-color: red; }"
-                "QPushButton::disabled{"
-                    "font: 20pt \"Source Code Pro\";"
-                    "color: rgb(0, 0, 0);"
-                    "background-color: rgb(50, 50, 50);"
-                "}";
-        _ui->widgetTones->setStyleSheet(style);
-    }else{
-        _ui->widgetTones->setStyleSheet(style);
-        style = "";
-        _ui->button1->setStyleSheet(style);
-        _ui->button2->setStyleSheet(style);
-        _ui->button3->setStyleSheet(style);
-        _ui->button5->setStyleSheet(style);
-        _ui->button6->setStyleSheet(style);
-        _ui->button7->setStyleSheet(style);
-        _ui->button10->setStyleSheet(style);
-    }
+    _ui->widgetTones->setStyleSheet(style);
+    style = "";
+    _ui->button1->setStyleSheet(style);
+    _ui->button2->setStyleSheet(style);
+    _ui->button3->setStyleSheet(style);
+    _ui->button4->setStyleSheet(style);
+    _ui->button5->setStyleSheet(style);
+    _ui->button6->setStyleSheet(style);
+    _ui->button7->setStyleSheet(style);
+    _ui->button8->setStyleSheet(style);
+    _ui->button9->setStyleSheet(style);
+    _ui->button10->setStyleSheet(style);
+    _ui->button11->setStyleSheet(style);
+    _ui->button12->setStyleSheet(style);
 }
 
 void MainWindow::SetTonesWhite(){
@@ -1429,10 +1429,15 @@ void MainWindow::SetTonesWhite(){
     _ui->button1->setStyleSheet(style);
     _ui->button2->setStyleSheet(style);
     _ui->button3->setStyleSheet(style);
+    _ui->button4->setStyleSheet(style);
     _ui->button5->setStyleSheet(style);
     _ui->button6->setStyleSheet(style);
     _ui->button7->setStyleSheet(style);
+    _ui->button8->setStyleSheet(style);
+    _ui->button9->setStyleSheet(style);
     _ui->button10->setStyleSheet(style);
+    _ui->button11->setStyleSheet(style);
+    _ui->button12->setStyleSheet(style);
 }
 
 void MainWindow::SetTonesBlue(){
@@ -1453,10 +1458,70 @@ void MainWindow::SetTonesBlue(){
     _ui->button1->setStyleSheet(style);
     _ui->button2->setStyleSheet(style);
     _ui->button3->setStyleSheet(style);
+    _ui->button4->setStyleSheet(style);
     _ui->button5->setStyleSheet(style);
     _ui->button6->setStyleSheet(style);
     _ui->button7->setStyleSheet(style);
+    _ui->button8->setStyleSheet(style);
+    _ui->button9->setStyleSheet(style);
     _ui->button10->setStyleSheet(style);
+    _ui->button11->setStyleSheet(style);
+    _ui->button12->setStyleSheet(style);
+}
+
+void MainWindow::SetTonesRandom(){
+    QString style = "QPushButton{"
+                    "font: 20pt \"Source Code Pro\";"
+                    "color: rgb(0, 0, 0);"
+                    "background-color: rgb(150, 150, 240);"
+                    "border-radius:50px;"
+                    "}"
+                    "QPushButton:pressed { background-color: red; }"
+                    "QPushButton::disabled{"
+                    "font: 20pt \"Source Code Pro\";"
+                    "color: rgb(0, 0, 0);"
+                    "background-color: rgb(50, 50, 50);"
+                    "}";
+    uint8_t r,g,b;
+
+    _ui->widgetTones->setStyleSheet(style);
+
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button1->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button2->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button3->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button4->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button5->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button6->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button7->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button8->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button9->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button10->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button11->setStyleSheet(style);
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button12->setStyleSheet(style);
 }
 
 void MainWindow::CheckGameState(Sounds::Sound tone){
@@ -1753,6 +1818,12 @@ void MainWindow::CheckScore(){
     SetScoreboard();
 }
 
+void MainWindow::GetRandomColor(uint8_t &r, uint8_t &g, uint8_t &b){
+    r = QRandomGenerator::global()->bounded(50,255);
+    g = QRandomGenerator::global()->bounded(50,255);
+    b = QRandomGenerator::global()->bounded(50,255);
+}
+
 void MainWindow::OctaveChanged(){
     _currentoctave = _ui->comboOctave->currentText().toUInt();
 }
@@ -1905,6 +1976,25 @@ void MainWindow::ReceivedFileMusic(QString filename, QString music, int clock, Q
     default:
         break;
     }
+}
+
+void MainWindow::TimerBlinkTimeout(){
+    QString style;
+    uint8_t r,g,b;
+    GetRandomColor(r,g,b);
+    style = "background-color: rgb("+QString::number(r)+","+QString::number(g)+","+QString::number(b)+");";
+    _ui->button12->setStyleSheet(_ui->button11->styleSheet());
+    _ui->button11->setStyleSheet(_ui->button10->styleSheet());
+    _ui->button10->setStyleSheet(_ui->button9->styleSheet());
+    _ui->button9->setStyleSheet(_ui->button8->styleSheet());
+    _ui->button8->setStyleSheet(_ui->button7->styleSheet());
+    _ui->button7->setStyleSheet(_ui->button6->styleSheet());
+    _ui->button6->setStyleSheet(_ui->button5->styleSheet());
+    _ui->button5->setStyleSheet(_ui->button4->styleSheet());
+    _ui->button4->setStyleSheet(_ui->button3->styleSheet());
+    _ui->button3->setStyleSheet(_ui->button2->styleSheet());
+    _ui->button2->setStyleSheet(_ui->button1->styleSheet());
+    _ui->button1->setStyleSheet(style);
 }
 
 void MainWindow::On_button1_Clicked(){

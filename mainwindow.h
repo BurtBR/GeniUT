@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QThread>
+#include <QTimer>
 #include <QKeyEvent>
 #include <QDir>
 #include <QFileInfo>
@@ -86,6 +87,8 @@ private:
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
+    QTimer *_timerBlink = nullptr;
+    uint8_t _blinkR=255, _blinkG=240, _blinkB=240, _blinkcolor = 0;
     Gamemode _currentgamemode = Gamemode::Welcome;
     QFileInfoList _musicsInFolder;
     QVector<uint> _scoreToday, _scoreFile;
@@ -110,8 +113,26 @@ private:
     void SetTonesGreen();
     void SetTonesWhite();
     void SetTonesBlue();
+    void SetTonesRandom();
     void CheckGameState(Sounds::Sound tone);
     void CheckScore();
+    void GetRandomColor(uint8_t &r, uint8_t &g, uint8_t &b);
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+    bool Init();
+
+private slots:
+    void OctaveChanged();
+    void ScoreFile(QVector<uint> score);
+    void FileError(QString text);
+    void FileHandlingFinished();
+    void InvalidMusicStr();
+    void MusicFinished();
+    void MusicPressButton(uint8_t octave, uint8_t pos);
+    void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
+    void TimerBlinkTimeout();
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -132,6 +153,7 @@ private:
     void On_buttonOpen_Clicked();
     void On_buttonBack_Clicked();
 #ifdef _IS_PIODEVICE
+    void GPIOError(QString text);
     void On_button1_Pressed();
     void On_button2_Pressed();
     void On_button3_Pressed();
@@ -158,24 +180,6 @@ private:
     void On_button12_Released();
 #endif
 
-public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-    bool Init();
-
-private slots:
-    void OctaveChanged();
-    void ScoreFile(QVector<uint> score);
-    void FileError(QString text);
-    void FileHandlingFinished();
-    void InvalidMusicStr();
-    void MusicFinished();
-    void MusicPressButton(uint8_t octave, uint8_t pos);
-    void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
-#ifdef _IS_PIODEVICE
-    void GPIOError(QString text);
-#endif
-
 signals:
     void PlaySoundNext(Sounds::Sound);
     void PlayTone(Sounds::Sound);
@@ -186,8 +190,9 @@ signals:
     void PlayTones(QVector<Sounds::Sound> music, int clock, uint32_t limit = 0xFFFFFFFF, int delay = 0);
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
-    void GPIOInit();
+    void TimerBlinkStart(int msec);
 #ifdef _IS_PIODEVICE
+    void GPIOInit();
     void GPIOTurnOn(WorkerGPIO::LED btn);
     void GPIOTurnOff(WorkerGPIO::LED btn);
 #endif
