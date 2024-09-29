@@ -13,8 +13,8 @@
 #include "workerfilehandler.h"
 
 #ifdef Q_OS_LINUX
-    #define _IS_PIODEVICE true
-    #if _IS_PIODEVICE
+    #define _IS_PIODEVICE
+    #ifdef _IS_PIODEVICE
         #include "workergpio.h"
     #endif
 #endif
@@ -76,7 +76,7 @@ class MainWindow : public QMainWindow{
         BtnDeleteLast
     };
 
-#if _IS_PIODEVICE
+#ifdef _IS_PIODEVICE
 private:
     QThread *_threadGPIO = nullptr;
     bool StartThreadGPIO();
@@ -131,7 +131,7 @@ private:
     void On_buttonSave_Clicked();
     void On_buttonOpen_Clicked();
     void On_buttonBack_Clicked();
-#if _IS_PIODEVICE
+#ifdef _IS_PIODEVICE
     void On_button1_Pressed();
     void On_button2_Pressed();
     void On_button3_Pressed();
@@ -172,7 +172,7 @@ private slots:
     void MusicFinished();
     void MusicPressButton(uint8_t octave, uint8_t pos);
     void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
-#if _IS_PIODEVICE
+#ifdef _IS_PIODEVICE
     void GPIOError(QString text);
 #endif
 
@@ -187,7 +187,9 @@ signals:
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
     void GPIOInit();
+#ifdef _IS_PIODEVICE
     void GPIOTurnOn(WorkerGPIO::LED btn);
     void GPIOTurnOff(WorkerGPIO::LED btn);
+#endif
 };
 #endif // MAINWINDOW_H

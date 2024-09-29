@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     connect(_ui->buttonBack, &QPushButton::clicked, this, &MainWindow::On_buttonBack_Clicked);
     connect(_ui->comboOctave, &QComboBox::currentIndexChanged, this, &MainWindow::OctaveChanged);
 
-#if _IS_PIODEVICE
+#ifdef _IS_PIODEVICE
     connect(_ui->button1, &QPushButton::pressed, this, &MainWindow::On_button1_Pressed);
     connect(_ui->button2, &QPushButton::pressed, this, &MainWindow::On_button2_Pressed);
     connect(_ui->button3, &QPushButton::pressed, this, &MainWindow::On_button3_Pressed);
@@ -67,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
 MainWindow::~MainWindow(){
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);
-    #if _IS_PIODEVICE
+    #ifdef _IS_PIODEVICE
         DeleteThread(&_threadGPIO);
     #endif
     delete _ui;
@@ -87,7 +87,7 @@ bool MainWindow::Init(){
     if(!StartThreadFileHandler())
         return false;
 
-    #if _IS_PIODEVICE
+    #ifdef _IS_PIODEVICE
         if(!StartThreadGPIO())
             return false;
     #endif
@@ -139,7 +139,7 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
     return QMainWindow::eventFilter(target, event);
 }
 
-#if _IS_PIODEVICE
+#ifdef _IS_PIODEVICE
 bool MainWindow::StartThreadGPIO(){
 
     if(_threadGPIO)
