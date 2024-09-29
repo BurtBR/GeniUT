@@ -193,8 +193,10 @@ signals:
     void TimerBlinkStart(int msec);
 #ifdef _IS_PIODEVICE
     void GPIOInit();
+    void GPIOAllOff();
     void GPIOTurnOn(WorkerGPIO::LED btn);
     void GPIOTurnOff(WorkerGPIO::LED btn);
+    void GPIOAlternateBlink();
 #endif
 };
 #endif // MAINWINDOW_H

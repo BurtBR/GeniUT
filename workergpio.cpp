@@ -106,6 +106,7 @@ WorkerGPIO::WorkerGPIO(QObject *parent) : QObject{parent}{
 
 WorkerGPIO::~WorkerGPIO(){
     if(_gpio_base){
+        AllOff();
         _memfile->unmap((uchar*)_gpio_base);
         delete _memfile;
         _memfile = nullptr;
@@ -155,12 +156,6 @@ bool WorkerGPIO::GPIO_Init(){
     _GPIO_FSEL2 = (_GPIO_FSEL2 & (~_GPIO25_FSEL_Msk))|(_GPIO_FSEL_OUTPUT << _GPIO25_FSEL_Shift);
     _GPIO_FSEL2 = (_GPIO_FSEL2 & (~_GPIO26_FSEL_Msk))|(_GPIO_FSEL_OUTPUT << _GPIO26_FSEL_Shift);
     _GPIO_FSEL2 = (_GPIO_FSEL2 & (~_GPIO27_FSEL_Msk))|(_GPIO_FSEL_OUTPUT << _GPIO27_FSEL_Shift);
-
-    _GPIO_FSEL1 = (_GPIO_FSEL_OUTPUT << _GPIO16_FSEL_Shift);
-
-    AllOn();
-    QThread::msleep(1000);
-    AllOff();
 
     return true;
 }
@@ -260,5 +255,24 @@ void WorkerGPIO::TurnOff(LED btn){
         break;
     default:
         break;
+    }
+}
+
+void WorkerGPIO::AlternateBlink(){
+    _blinkstate ^= 1;
+    if(_blinkstate){
+        _GPIO_SET0 = _GPIO_LED1  | _GPIO_LED3  |
+                     _GPIO_LED6  | _GPIO_LED8  |
+                     _GPIO_LED9  | _GPIO_LED11 ;
+        _GPIO_CLR0 = _GPIO_LED2  | _GPIO_LED4  |
+                     _GPIO_LED5  | _GPIO_LED7  |
+                     _GPIO_LED10 | _GPIO_LED12 ;
+    }else{
+        _GPIO_SET0 = _GPIO_LED2  | _GPIO_LED4  |
+                     _GPIO_LED5  | _GPIO_LED7  |
+                     _GPIO_LED10 | _GPIO_LED12 ;
+        _GPIO_CLR0 = _GPIO_LED1 | _GPIO_LED3  |
+                     _GPIO_LED6 | _GPIO_LED8  |
+                     _GPIO_LED9 | _GPIO_LED11 ;
     }
 }

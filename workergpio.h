@@ -21,6 +21,7 @@ public:
 private:
     static volatile uint32_t* _gpio_base;
     static QFile *_memfile;
+    bool _blinkstate = 0;
 
 public:
     WorkerGPIO(QObject *parent = nullptr);
@@ -33,6 +34,7 @@ public slots:
     void AllOff();
     void TurnOn(LED btn);
     void TurnOff(LED btn);
+    void AlternateBlink();
 
 signals:
     void GPIOError(QString);

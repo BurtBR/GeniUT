@@ -176,8 +176,10 @@ bool MainWindow::StartThreadGPIO(){
 
     connect(_threadGPIO, &QThread::finished, worker, &WorkerGPIO::deleteLater);
     connect(this, &MainWindow::GPIOInit, worker, &WorkerGPIO::Init);
+    connect(this, &MainWindow::GPIOAllOff, worker, &WorkerGPIO::AllOff);
     connect(this, &MainWindow::GPIOTurnOn, worker, &WorkerGPIO::TurnOn);
     connect(this, &MainWindow::GPIOTurnOff, worker, &WorkerGPIO::TurnOff);
+    connect(this, &MainWindow::GPIOAlternateBlink, worker, &WorkerGPIO::AlternateBlink);
     connect(worker, &WorkerGPIO::GPIOError, this, &MainWindow::GPIOError);
 
     worker->moveToThread(_threadGPIO);
@@ -496,6 +498,10 @@ void MainWindow::SetGamemode(Gamemode mode){
 }
 
 void MainWindow::SetUIMode(UIMode mode){
+
+#ifdef _IS_PIODEVICE
+    emit GPIOAllOff();
+#endif
 
     _ui->button1->setText("C");
     _ui->button2->setText("C#");
@@ -1995,6 +2001,9 @@ void MainWindow::TimerBlinkTimeout(){
     _ui->button3->setStyleSheet(_ui->button2->styleSheet());
     _ui->button2->setStyleSheet(_ui->button1->styleSheet());
     _ui->button1->setStyleSheet(style);
+#ifdef _IS_PIODEVICE
+    emit GPIOAlternateBlink();
+#endif
 }
 
 void MainWindow::On_button1_Clicked(){
