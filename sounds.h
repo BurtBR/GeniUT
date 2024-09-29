@@ -29,6 +29,7 @@ public:
         filehandlingfail,
         musiccomplete,
         player1choosenote,
+        failGPIO,
         _end
     };
 

@@ -109,6 +109,7 @@ WorkerGPIO::~WorkerGPIO(){
         _memfile->unmap((uchar*)_gpio_base);
         delete _memfile;
         _memfile = nullptr;
+        _gpio_base = nullptr;
     }
 }
 

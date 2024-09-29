@@ -176,7 +176,7 @@ bool MainWindow::StartThreadGPIO(){
 }
 
 void MainWindow::GPIOError(QString text){
-    // SOM DE FALHA DE GPIO
+    emit PlaySoundNext(Sounds::Sound::failGPIO);
     DeleteThread(&_threadGPIO);
 }
 
