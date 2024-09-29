@@ -11,6 +11,11 @@ int main(int argc, char *argv[]){
 
     QApplication a(argc, argv);
     MainWindow w;
+
+#ifdef _IS_PIODEVICE
+    a.setOverrideCursor(QCursor(Qt::BlankCursor));
+#endif
+
     w.showMaximized();
 
     if(!w.Init()){
