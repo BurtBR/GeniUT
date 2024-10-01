@@ -391,7 +391,7 @@ void MainWindow::SetGamemode(Gamemode mode){
     case Gamemode::Practice:
         if(QDir("Musicas").isEmpty()){
             emit PlaySoundNext(Sounds::Sound::nomusicpractice);
-            return;
+            return SetUIMode(UIMode::Initial);
         }
         SetCurrentRound(1);
         _currentMusic.clear();
@@ -411,7 +411,7 @@ void MainWindow::SetGamemode(Gamemode mode){
     case Gamemode::OneMusic:
         if(QDir("Musicas").isEmpty()){
             emit PlaySoundNext(Sounds::Sound::nomusicplay);
-            return;
+            return SetUIMode(UIMode::Initial);
         }
         if(!StartThreadFileHandler()){
             emit PlaySoundNext(Sounds::Sound::filehandlingfail);
@@ -443,7 +443,7 @@ void MainWindow::SetGamemode(Gamemode mode){
     case Gamemode::TwoMusic:
         if(QDir("Musicas").isEmpty()){
             emit PlaySoundNext(Sounds::Sound::nomusicplay);
-            return;
+            return SetUIMode(UIMode::Initial);
         }
         if(!StartThreadFileHandler()){
             emit PlaySoundNext(Sounds::Sound::filehandlingfail);
