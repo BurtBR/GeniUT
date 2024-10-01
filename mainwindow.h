@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QRandomGenerator>
+#include <QMovie>
 
 #include "workersoundplayer.h"
 #include "workerfilehandler.h"
@@ -117,6 +118,7 @@ private:
     void CheckGameState(Sounds::Sound tone);
     void CheckScore();
     void GetRandomColor(uint8_t &r, uint8_t &g, uint8_t &b);
+    void ShowWinScreen();
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -191,6 +193,7 @@ signals:
     void SaveMusicFile(QString filename, QString music, int clock);
     void OpenMusicFile(QString filename);
     void TimerBlinkStart(int msec);
+    void DeleteWinScreen();
 #ifdef _IS_PIODEVICE
     void GPIOInit();
     void GPIOAllOff();

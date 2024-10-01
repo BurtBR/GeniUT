@@ -371,6 +371,7 @@ void MainWindow::SetGamemode(Gamemode mode){
 
     StopMusic();
     _isRecording = false;
+    emit DeleteWinScreen();
 
     switch(mode){
 
@@ -1531,6 +1532,7 @@ void MainWindow::SetTonesRandom(){
 }
 
 void MainWindow::CheckGameState(Sounds::Sound tone){
+
     switch(_currentgamemode){
     case Gamemode::Practice:
         if(_currentToneIndex >= _currentMusic.size()){
@@ -1798,11 +1800,14 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
 }
 
 void MainWindow::CheckScore(){
+    bool todayonly = false;
+
     for(int i=0; i<_scoreToday.size() ;i++){
         if(_currentRound > _scoreToday[i]){
             _scoreToday.insert(i, _currentRound);
             _scoreToday.removeLast();
-            emit PlaySoundNext(Sounds::Sound::newdailyrecord);
+            ShowWinScreen();
+            todayonly = true;
             break;
         }
     }
@@ -1811,6 +1816,7 @@ void MainWindow::CheckScore(){
         if(_currentRound > _scoreFile[i]){
             _scoreFile.insert(i, _currentRound);
             _scoreFile.removeLast();
+            todayonly = false;
             emit PlaySoundNext(Sounds::Sound::newdevicerecord);
             if(!StartThreadFileHandler()){
                 emit PlaySoundNext(Sounds::Sound::unabletosave);
@@ -1821,6 +1827,9 @@ void MainWindow::CheckScore(){
         }
     }
 
+    if(todayonly)
+        emit PlaySoundNext(Sounds::Sound::newdailyrecord);
+
     SetScoreboard();
 }
 
@@ -1828,6 +1837,27 @@ void MainWindow::GetRandomColor(uint8_t &r, uint8_t &g, uint8_t &b){
     r = QRandomGenerator::global()->bounded(50,255);
     g = QRandomGenerator::global()->bounded(50,255);
     b = QRandomGenerator::global()->bounded(50,255);
+}
+
+void MainWindow::ShowWinScreen(){
+    QMovie *mov;
+    QLabel *label;
+    QLabel *wid;
+
+    mov = new QMovie(":/Images/Confetti.gif");
+    label = new QLabel(_ui->widgetTones);
+    wid = new QLabel(_ui->widgetTones);
+    connect(this, &MainWindow::DeleteWinScreen, mov, &QMovie::deleteLater);
+    connect(this, &MainWindow::DeleteWinScreen, label, &QLabel::deleteLater);
+    connect(this, &MainWindow::DeleteWinScreen, wid, &QLabel::deleteLater);
+    wid->show();
+    label->show();
+    label->setScaledContents(true);
+    label->resize(_ui->widgetTones->size());
+    wid->resize(_ui->widgetTones->size());
+    label->setMovie(mov);
+    mov->start();
+    wid->setStyleSheet("border-image: url(:/Images/Trophy.png) 0 0 0 0 stretch stretch;");
 }
 
 void MainWindow::OctaveChanged(){
