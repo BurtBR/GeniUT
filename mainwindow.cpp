@@ -1832,8 +1832,9 @@ bool MainWindow::CheckScore(){
         }
     }
 
-    if(todayonly)
+    if(todayonly){
         emit PlaySoundNext(Sounds::Sound::newdailyrecord);
+    }
 
     SetScoreboard();
     return newscore;
@@ -1863,7 +1864,8 @@ void MainWindow::ShowWinScreen(){
     wid->resize(_ui->widgetTones->size());
     label->setMovie(mov);
     mov->start();
-    wid->setStyleSheet("border-image: url(:/Images/Trophy.png) 0 0 0 0 stretch stretch;");
+    wid->setStyleSheet( "border-image: url(:/Images/Trophy.png) 0 0 0 0 stretch stretch;");
+    emit PlayTone(Sounds::Sound::winsound);
 }
 
 void MainWindow::OctaveChanged(){

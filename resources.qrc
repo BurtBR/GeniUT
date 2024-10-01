@@ -79,5 +79,6 @@
         <file>Sounds/FailGPIO.wav</file>
         <file>Images/Confetti.gif</file>
         <file>Images/Trophy.png</file>
+        <file>Sounds/WinSound.wav</file>
     </qresource>
 </RCC>

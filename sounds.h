@@ -30,6 +30,7 @@ public:
         musiccomplete,
         player1choosenote,
         failGPIO,
+        winsound,
         _end
     };
 
