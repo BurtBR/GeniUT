@@ -116,7 +116,7 @@ private:
     void SetTonesBlue();
     void SetTonesRandom();
     void CheckGameState(Sounds::Sound tone);
-    void CheckScore();
+    bool CheckScore();
     void GetRandomColor(uint8_t &r, uint8_t &g, uint8_t &b);
     void ShowWinScreen();
 

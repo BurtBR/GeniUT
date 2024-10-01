@@ -1709,7 +1709,8 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
                 emit PlaySoundNext(Sounds::Sound::player1wins);
 
             _currentToneIndex = _currentMusic.size();
-            CheckScore();
+            if(!CheckScore())
+                ShowWinScreen();
         }
         break;
 
@@ -1750,7 +1751,8 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
                 emit PlaySoundNext(Sounds::Sound::player1wins);
 
             _currentToneIndex = _currentMusic.size();
-            CheckScore();
+            if(!CheckScore())
+                ShowWinScreen();
         }
         break;
 
@@ -1790,7 +1792,8 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
                 emit PlaySoundNext(Sounds::Sound::player1wins);
 
             _currentToneIndex = _currentMusic.size()+1;
-            CheckScore();
+            if(!CheckScore())
+                ShowWinScreen();
         }
         break;
 
@@ -1799,8 +1802,8 @@ void MainWindow::CheckGameState(Sounds::Sound tone){
     }
 }
 
-void MainWindow::CheckScore(){
-    bool todayonly = false;
+bool MainWindow::CheckScore(){
+    bool todayonly = false, newscore = false;
 
     for(int i=0; i<_scoreToday.size() ;i++){
         if(_currentRound > _scoreToday[i]){
@@ -1808,6 +1811,7 @@ void MainWindow::CheckScore(){
             _scoreToday.removeLast();
             ShowWinScreen();
             todayonly = true;
+            newscore = true;
             break;
         }
     }
@@ -1817,6 +1821,7 @@ void MainWindow::CheckScore(){
             _scoreFile.insert(i, _currentRound);
             _scoreFile.removeLast();
             todayonly = false;
+            newscore = true;
             emit PlaySoundNext(Sounds::Sound::newdevicerecord);
             if(!StartThreadFileHandler()){
                 emit PlaySoundNext(Sounds::Sound::unabletosave);
@@ -1831,6 +1836,7 @@ void MainWindow::CheckScore(){
         emit PlaySoundNext(Sounds::Sound::newdailyrecord);
 
     SetScoreboard();
+    return newscore;
 }
 
 void MainWindow::GetRandomColor(uint8_t &r, uint8_t &g, uint8_t &b){
