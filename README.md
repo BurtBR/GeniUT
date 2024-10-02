@@ -64,6 +64,8 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
   > cd \<Pasta de destino do programa compilado\>
 * Compile o programa através do cmake ou ninja, limitando a quantidade de jobs possíveis para que o compilador não exceda a memória do dispositivo (--parallel \<quantidade\> ou -j \<quantidade\>)
   > ninja -j 1
+
   ou
+  
   > cmake --build . --parallel 1
 * Execute o programa GeniUT gerado nessa pasta
