@@ -87,9 +87,12 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
 * Reinicie o dispositivo
   > sudo reboot
 
-### Problemas Comuns
+### Problemas Comuns - PiOS
 * "Não há músicas para praticar"
   * Verifique se existe uma pasta "Musicas" em /home/nomedousuario e ela está vazia. Nesse caso, o aplicativo está rodando em /home/nomedousuario, mova as músicas da pasta GeniUT/Musicas para /home/nomedousuario/Musicas
 * Aplicativo sem som
   * Verifique se a saída de som do dispositivo está correta (em "AV Jack" por exemplo)
   * Verifique se o gstreamer e o pulseaudio estão instalados
+* Desempenho ruim
+  * A resolução da tela pode ter um grande impacto no desempenho do dispositivo. Tente reduzir.
+  * Desligue o Wifi e Bluetooth
