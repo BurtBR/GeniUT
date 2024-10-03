@@ -76,7 +76,7 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
 * Crie um arquivo GeniUT.desktop nessa pasta
   > cd /home/usuario/.config/autostart <br>
   > touch GeniUT.desktop
-* Abra o arquivo e coloque os dados de acordo com o local do aplicativo e salve
+* Abra o arquivo, coloque os dados de acordo com o local do aplicativo e salve
   > nano GeniUT.desktop
 
   > [Desktop Entry] <br>
