@@ -1850,6 +1850,7 @@ void MainWindow::ShowWinScreen(){
     QMovie *mov;
     QLabel *label;
     QLabel *wid;
+    QPixmap trophy(":/Images/Trophy.png");
 
     mov = new QMovie(":/Images/Confetti.gif");
     label = new QLabel(_ui->widgetTones);
@@ -1858,13 +1859,13 @@ void MainWindow::ShowWinScreen(){
     connect(this, &MainWindow::DeleteWinScreen, label, &QLabel::deleteLater);
     connect(this, &MainWindow::DeleteWinScreen, wid, &QLabel::deleteLater);
     wid->show();
+    wid->resize(_ui->widgetTones->size());
+    wid->setPixmap(trophy.scaledToWidth(wid->width()));
     label->show();
     label->setScaledContents(true);
     label->resize(_ui->widgetTones->size());
-    wid->resize(_ui->widgetTones->size());
     label->setMovie(mov);
     mov->start();
-    wid->setStyleSheet( "border-image: url(:/Images/Trophy.png) 0 0 0 0 stretch stretch;");
     emit PlayTone(Sounds::Sound::winsound);
 }
 
