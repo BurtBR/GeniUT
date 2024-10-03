@@ -1,7 +1,7 @@
 # GeniUT
 Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas divididas em 5 oitavas de escalas cromáticas.
 
-## Instalando
+## Instalação - Windows
 * Vá para a página de Releases: https://github.com/BurtBR/GeniUT/releases
 * Baixe o .zip da última versão
 * Extraia os arquivos em alguma pasta
