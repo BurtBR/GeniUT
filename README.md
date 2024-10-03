@@ -87,7 +87,38 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
 * Reinicie o dispositivo
   > sudo reboot
 
-### Problemas Comuns - PiOS
+## Pinos Raspberry Pi
+
+  |3.3V |o  o| 5V |
+  |--:|:--:|:--|
+  |__GPIO2__ |__o  o__| __5V__ |
+  |__GPIO3__ |__o  o__| __GND__ |
+  |__GPIO4__ |__o  o__| __GPIO14__ |
+  |__GND__ |__o  o__| __GPIO15__ |
+  |__GPIO17__ |__o  o__| __GPIO18__ |
+  |__GPIO27__ |__o  o__| __GND__ |
+  |__GPIO22__ |__o  o__| __GPIO23__ |
+  |__3.3V__ |__o  o__| __GPIO24__|
+  |__GPIO10__ |__o  o__| __GND__ |
+  |__GPIO9__ |__o  o__| __GPIO25__ |
+  |__GPIO11__ |__o  o__| __GPIO8__ |
+  |__GND__ |__o  o__| __GPIO7__ |
+|__RESERVED__ |__o  o__| __RESERVED__ |
+  |__GPIO5__ |__o  o__| __GND__ |
+  |__GPIO6__ |__o  o__| __GPIO12__ |
+  |__GPIO13__ |__o  o__| __GND__ |
+  |__GPIO19__ |__o  o__| __GPIO16__ |
+  |__GPIO26__ |__o  o__| __GPIO20__ |
+  |__GND__ |__o  o__| __GPIO21__ |
+
+Teclado de LEDs:
+
+| GPIO17 | GPIO27 | GPIO22 | GPIO5  |
+|---|---|---|---|
+| __GPIO6__  | __GPIO13__ | __GPIO26__ | __GPIO12__ |
+| __GPIO25__ | __GPIO24__ | __GPIO23__ | __GPIO18__ |
+
+## Problemas Comuns - PiOS
 * "Não há músicas para praticar"
   * Verifique se existe uma pasta "Musicas" em /home/nomedousuario e ela está vazia. Nesse caso, o aplicativo está rodando em /home/nomedousuario, mova as músicas da pasta GeniUT/Musicas para /home/nomedousuario/Musicas
 * Aplicativo sem som
