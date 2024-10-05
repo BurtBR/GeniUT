@@ -70,6 +70,16 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
   > cmake --build . --parallel 1
 * Execute o programa GeniUT gerado nessa pasta
 
+## Problemas Comuns - PiOS
+* "Não há músicas para praticar"
+  * Verifique se existe uma pasta "Musicas" em /home/nomedousuario e ela está vazia. Nesse caso, o aplicativo está rodando em /home/nomedousuario, mova as músicas da pasta GeniUT/Musicas para /home/nomedousuario/Musicas
+* Aplicativo sem som
+  * Verifique se a saída de som do dispositivo está correta (em "AV Jack" por exemplo)
+  * Verifique se o gstreamer e o pulseaudio estão instalados
+* Desempenho ruim
+  * A resolução da tela pode ter um grande impacto no desempenho do dispositivo. Tente reduzir.
+  * Desligue o Wifi e Bluetooth
+
 ## Iniciar o programa automaticamente - PiOS
 * Crie uma pasta autostart em /home/usuario/.config
   > mkdir /home/usuario/.config/autostart
@@ -118,12 +128,6 @@ Teclado de LEDs:
 | __GPIO6__  | __GPIO13__ | __GPIO26__ | __GPIO12__ |
 | __GPIO25__ | __GPIO24__ | __GPIO23__ | __GPIO18__ |
 
-## Problemas Comuns - PiOS
-* "Não há músicas para praticar"
-  * Verifique se existe uma pasta "Musicas" em /home/nomedousuario e ela está vazia. Nesse caso, o aplicativo está rodando em /home/nomedousuario, mova as músicas da pasta GeniUT/Musicas para /home/nomedousuario/Musicas
-* Aplicativo sem som
-  * Verifique se a saída de som do dispositivo está correta (em "AV Jack" por exemplo)
-  * Verifique se o gstreamer e o pulseaudio estão instalados
-* Desempenho ruim
-  * A resolução da tela pode ter um grande impacto no desempenho do dispositivo. Tente reduzir.
-  * Desligue o Wifi e Bluetooth
+Circuito Proposto:
+
+![alt text](https://github.com/BurtBR/GeniUT/blob/master/CircuitDiagram.png?raw=true)
