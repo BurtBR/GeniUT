@@ -123,10 +123,10 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
 
 Teclado de LEDs:
 
-| GPIO17 | GPIO27 | GPIO22 | GPIO5  |
+| GPIO5 | GPIO22 | GPIO27 | GPIO17  |
 |---|---|---|---|
-| __GPIO6__  | __GPIO13__ | __GPIO26__ | __GPIO12__ |
-| __GPIO25__ | __GPIO24__ | __GPIO23__ | __GPIO18__ |
+| __GPIO12__  | __GPIO26__ | __GPIO13__ | __GPIO6__ |
+| __GPIO18__ | __GPIO23__ | __GPIO24__ | __GPIO25__ |
 
 Circuito Proposto:
 
