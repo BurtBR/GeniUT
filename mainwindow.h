@@ -11,6 +11,7 @@
 #include <QRandomGenerator>
 #include <QMovie>
 #include <QMediaPlayer>
+#include <QVideoFrame>
 
 #include "workersoundplayer.h"
 #include "workerfilehandler.h"
@@ -142,6 +143,7 @@ private slots:
     void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
     void TimerBlinkTimeout();
     void VideoStatusChanged(QMediaPlayer::MediaStatus status);
+    void VideoFrameChanged(const QVideoFrame &frame);
 
     void On_button1_Clicked();
     void On_button2_Clicked();

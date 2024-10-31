@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include <QVideoWidget>
+#include <QVideoSink>
 #include <QAudioOutput>
 
 const QVector<QUrl> MainWindow::_videoSources{
@@ -174,40 +174,40 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
 
 bool MainWindow::StartMediaPlayer(){
 
-    QVideoWidget *videowidget;
+    //QVideoWidget *videowidget;
+    QVideoSink *sink;
     QAudioOutput *audioout;
 
     try{
-        videowidget = new QVideoWidget;
+        sink = new QVideoSink;
     }catch(...){
         return false;
     }
-    _ui->widgetVideo->layout()->addWidget(videowidget);
-    videowidget->show();
 
     try{
         audioout = new QAudioOutput;
     }catch(...){
-        delete videowidget;
+        delete sink;
         return false;
     }
 
     try{
         _mediaPlayer = new QMediaPlayer;
     }catch(...){
-        delete videowidget;
+        delete sink;
         delete audioout;
         return false;
     }
 
     _mediaPlayer->setAudioOutput(audioout);
-    _mediaPlayer->setVideoOutput(videowidget);
+    _mediaPlayer->setVideoSink(sink);
+    //_mediaPlayer->setVideoOutput(videowidget);
 
-    videowidget->setAutoFillBackground(false);
-
-    connect(_mediaPlayer, &QMediaPlayer::destroyed , videowidget, &QVideoWidget::deleteLater);
+    connect(_mediaPlayer, &QMediaPlayer::destroyed , sink, &QVideoSink::deleteLater);
     connect(_mediaPlayer, &QMediaPlayer::destroyed , audioout, &QAudioOutput::deleteLater);
     connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::VideoStatusChanged);
+
+    connect(sink, &QVideoSink::videoFrameChanged, this, &MainWindow::VideoFrameChanged);
 
     connect(this, &MainWindow::VideoSetSource, _mediaPlayer, &QMediaPlayer::setSource);
     connect(this, &MainWindow::VideoPlay, _mediaPlayer, &QMediaPlayer::play);
@@ -2161,6 +2161,14 @@ void MainWindow::VideoStatusChanged(QMediaPlayer::MediaStatus status){
     if(status == QMediaPlayer::EndOfMedia){
         SetGamemode(_currentgamemode);
     }
+}
+
+void MainWindow::VideoFrameChanged(const QVideoFrame &frame){
+    if(!frame.isValid())
+        return;
+
+    QPixmap pixframe = QPixmap::fromImage(frame.toImage());
+    _ui->labelVideo->setPixmap(pixframe.scaled(_ui->labelVideo->width(), _ui->labelVideo->height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void MainWindow::On_button1_Clicked(){
