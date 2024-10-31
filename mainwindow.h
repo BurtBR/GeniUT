@@ -94,6 +94,7 @@ private:
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
+    QThread *_threadVideo = nullptr;
     QTimer *_timerBlink = nullptr;
     uint8_t _blinkR=255, _blinkG=240, _blinkB=240, _blinkcolor = 0;
     Gamemode _currentgamemode = Gamemode::Welcome;
@@ -106,9 +107,9 @@ private:
     uint _currentFileIndex = 0;
 
     bool eventFilter(QObject *target, QEvent *event);
-    bool StartMediaPlayer();
     bool StartThreadSoundPlayer();
     bool StartThreadFileHandler();
+    bool StartThreadVideo();
     void SetGamemode(Gamemode mode);
     void SetUIMode(UIMode mode);
     void ButtonClicked(ButtonType btn);
@@ -142,8 +143,8 @@ private slots:
     void MusicPressButton(uint8_t octave, uint8_t pos);
     void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
     void TimerBlinkTimeout();
-    void VideoStatusChanged(QMediaPlayer::MediaStatus status);
-    void VideoFrameChanged(const QVideoFrame &frame);
+    void VideoFrameReady(QPixmap frame);
+    void VideoEnded();
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -203,7 +204,6 @@ signals:
     void OpenMusicFile(QString filename);
     void TimerBlinkStart(int msec);
     void DeleteWinScreen();
-    void VideoSetSource(QUrl);
     void VideoPlay();
 #ifdef _IS_PIODEVICE
     void GPIOInit();

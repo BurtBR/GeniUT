@@ -4,6 +4,8 @@
 #include <QVideoSink>
 #include <QAudioOutput>
 
+#include "workervideo.h"
+
 const QVector<QUrl> MainWindow::_videoSources{
     QUrl("./Videos/SabiaGeradoSeno.mp4"),
     QUrl("./Videos/HardClipping.mp4")
@@ -83,6 +85,7 @@ MainWindow::~MainWindow(){
     }
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);
+    DeleteThread(&_threadVideo);
     #ifdef _IS_PIODEVICE
         DeleteThread(&_threadGPIO);
     #endif
@@ -97,15 +100,15 @@ bool MainWindow::Init(){
             return false;
     }
 
-    if(!StartMediaPlayer()){
-        return false;
-    }
-
     if(!StartThreadSoundPlayer()){
         return false;
     }
 
     if(!StartThreadFileHandler()){
+        return false;
+    }
+
+    if(!StartThreadVideo()){
         return false;
     }
 
@@ -169,49 +172,6 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
     }
 
     return QMainWindow::eventFilter(target, event);
-}
-
-bool MainWindow::StartMediaPlayer(){
-
-    //QVideoWidget *videowidget;
-    QVideoSink *sink;
-    QAudioOutput *audioout;
-
-    try{
-        sink = new QVideoSink;
-    }catch(...){
-        return false;
-    }
-
-    try{
-        audioout = new QAudioOutput;
-    }catch(...){
-        delete sink;
-        return false;
-    }
-
-    try{
-        _mediaPlayer = new QMediaPlayer;
-    }catch(...){
-        delete sink;
-        delete audioout;
-        return false;
-    }
-
-    _mediaPlayer->setAudioOutput(audioout);
-    _mediaPlayer->setVideoSink(sink);
-    //_mediaPlayer->setVideoOutput(videowidget);
-
-    connect(_mediaPlayer, &QMediaPlayer::destroyed , sink, &QVideoSink::deleteLater);
-    connect(_mediaPlayer, &QMediaPlayer::destroyed , audioout, &QAudioOutput::deleteLater);
-    connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::VideoStatusChanged);
-
-    connect(sink, &QVideoSink::videoFrameChanged, this, &MainWindow::VideoFrameChanged);
-
-    connect(this, &MainWindow::VideoSetSource, _mediaPlayer, &QMediaPlayer::setSource);
-    connect(this, &MainWindow::VideoPlay, _mediaPlayer, &QMediaPlayer::play);
-
-    return true;
 }
 
 #ifdef _IS_PIODEVICE
@@ -425,6 +385,40 @@ bool MainWindow::StartThreadFileHandler(){
 
     worker->moveToThread(_threadFileHandler);
     _threadFileHandler->start();
+
+    return true;
+}
+
+bool MainWindow::StartThreadVideo(){
+    if(_threadVideo)
+        return false;
+
+    WorkerVideo *worker;
+
+    try{
+        _threadVideo = new QThread;
+    }catch(...){
+        _threadVideo = nullptr;
+        return false;
+    }
+
+    try{
+        worker = new WorkerVideo;
+    }catch(...){
+        delete _threadVideo;
+        _threadVideo = nullptr;
+        return false;
+    }
+
+    connect(_threadVideo, &QThread::finished, worker, &WorkerVideo::deleteLater);
+
+    connect(worker, &WorkerVideo::FrameReady, this, &MainWindow::VideoFrameReady);
+    connect(worker, &WorkerVideo::EndOfVideo, this, &MainWindow::VideoEnded);
+
+    connect(this, &MainWindow::VideoPlay, worker, &WorkerVideo::Play);
+
+    worker->moveToThread(_threadVideo);
+    _threadVideo->start();
 
     return true;
 }
@@ -722,23 +716,8 @@ void MainWindow::SetUIMode(UIMode mode){
         break;
 
     case UIMode::Video:
-
         _ui->stackedWidget->setCurrentIndex(1);
-
-        if(!_videoSources.size()){
-            return SetGamemode(_currentgamemode);
-        }else if(_videocounter >= _videoSources.size()){
-            _videocounter = 0;
-        }
-
-        if(!QFileInfo::exists(_videoSources[_videocounter].toString())){
-            emit PlayTone(Sounds::Sound::invalidvideo);
-            return SetGamemode(_currentgamemode);
-        }
-
-        emit VideoSetSource(_videoSources[_videocounter]);
         emit VideoPlay();
-        _videocounter++;
         break;
 
     default:
@@ -2156,18 +2135,16 @@ void MainWindow::TimerBlinkTimeout(){
 #endif
 }
 
-void MainWindow::VideoStatusChanged(QMediaPlayer::MediaStatus status){
-    if(status == QMediaPlayer::EndOfMedia){
-        SetGamemode(_currentgamemode);
-    }
+void MainWindow::VideoEnded(){
+    SetGamemode(_currentgamemode);
 }
 
-void MainWindow::VideoFrameChanged(const QVideoFrame &frame){
-    if(!frame.isValid())
-        return;
-
-    QPixmap pixframe = QPixmap::fromImage(frame.toImage());
-    _ui->labelVideo->setPixmap(pixframe.scaled(_ui->labelVideo->width(), _ui->labelVideo->height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+void MainWindow::VideoFrameReady(QPixmap frame){
+#ifdef _IS_PIODEVICE
+    _ui->labelVideo->setPixmap(frame.scaled(_ui->labelVideo->width(), _ui->labelVideo->height(), Qt::KeepAspectRatio, Qt::FastTransformation));
+#else
+    _ui->labelVideo->setPixmap(frame.scaled(_ui->labelVideo->width(), _ui->labelVideo->height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+#endif
 }
 
 void MainWindow::On_button1_Clicked(){

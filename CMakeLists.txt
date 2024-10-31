@@ -30,6 +30,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         sounds.h sounds.cpp
         workerfilehandler.h workerfilehandler.cpp
         workergpio.h workergpio.cpp
+        workervideo.h workervideo.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET GeniUT APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -80,4 +81,9 @@ if(QT_VERSION_MAJOR EQUAL 6)
 endif()
 
 file(COPY Musicas DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY Videos DESTINATION ${CMAKE_BINARY_DIR})
+
+if(LINUX)
+    file(COPY VideosDRAFTS/ DESTINATION ${CMAKE_BINARY_DIR}/Videos)
+else()
+    file(COPY Videos/ DESTINATION ${CMAKE_BINARY_DIR}/Videos)
+endif()
