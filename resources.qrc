@@ -80,5 +80,6 @@
         <file>Images/Confetti.gif</file>
         <file>Images/Trophy.png</file>
         <file>Sounds/WinSound.wav</file>
+        <file>Sounds/InvalidVideo.wav</file>
     </qresource>
 </RCC>

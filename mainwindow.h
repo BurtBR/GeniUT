@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include <QRandomGenerator>
 #include <QMovie>
+#include <QMediaPlayer>
 
 #include "workersoundplayer.h"
 #include "workerfilehandler.h"
@@ -39,7 +40,8 @@ class MainWindow : public QMainWindow{
         Practice,
         Playing,
         PlayingCreate,
-        Creation
+        Creation,
+        Video
     };
 
     enum class Gamemode{
@@ -85,6 +87,9 @@ private:
 #endif
 
 private:
+    static const QVector<QUrl> _videoSources;
+    uint32_t _videocounter = 0;
+    QMediaPlayer *_mediaPlayer = nullptr;
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
@@ -100,6 +105,7 @@ private:
     uint _currentFileIndex = 0;
 
     bool eventFilter(QObject *target, QEvent *event);
+    bool StartMediaPlayer();
     bool StartThreadSoundPlayer();
     bool StartThreadFileHandler();
     void SetGamemode(Gamemode mode);
@@ -135,6 +141,7 @@ private slots:
     void MusicPressButton(uint8_t octave, uint8_t pos);
     void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
     void TimerBlinkTimeout();
+    void VideoStatusChanged(QMediaPlayer::MediaStatus status);
 
     void On_button1_Clicked();
     void On_button2_Clicked();
@@ -194,6 +201,8 @@ signals:
     void OpenMusicFile(QString filename);
     void TimerBlinkStart(int msec);
     void DeleteWinScreen();
+    void VideoSetSource(QUrl);
+    void VideoPlay();
 #ifdef _IS_PIODEVICE
     void GPIOInit();
     void GPIOAllOff();

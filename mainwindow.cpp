@@ -1,6 +1,14 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include <QVideoWidget>
+#include <QAudioOutput>
+
+const QVector<QUrl> MainWindow::_videoSources{
+    QUrl("./Videos/SabiaGeradoSeno.mp4"),
+    QUrl("./Videos/HardClipping.mp4")
+};
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
 
@@ -69,6 +77,10 @@ MainWindow::~MainWindow(){
         delete _timerBlink;
         _timerBlink = nullptr;
     }
+    if(_mediaPlayer){
+        delete _mediaPlayer;
+        _mediaPlayer = nullptr;
+    }
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);
     #ifdef _IS_PIODEVICE
@@ -85,15 +97,23 @@ bool MainWindow::Init(){
             return false;
     }
 
-    if(!StartThreadSoundPlayer())
+    if(!StartMediaPlayer()){
         return false;
+    }
 
-    if(!StartThreadFileHandler())
+    if(!StartThreadSoundPlayer()){
         return false;
+    }
+
+    if(!StartThreadFileHandler()){
+        return false;
+    }
 
     #ifdef _IS_PIODEVICE
-        if(!StartThreadGPIO())
-            return false;
+    if(!StartThreadGPIO()){
+        delete videowidget;
+        return false;
+    }
     #endif
 
     try{
@@ -150,6 +170,49 @@ bool MainWindow::eventFilter(QObject *target, QEvent *event){
     }
 
     return QMainWindow::eventFilter(target, event);
+}
+
+bool MainWindow::StartMediaPlayer(){
+
+    QVideoWidget *videowidget;
+    QAudioOutput *audioout;
+
+    try{
+        videowidget = new QVideoWidget;
+    }catch(...){
+        return false;
+    }
+    _ui->widgetVideo->layout()->addWidget(videowidget);
+    videowidget->show();
+
+    try{
+        audioout = new QAudioOutput;
+    }catch(...){
+        delete videowidget;
+        return false;
+    }
+
+    try{
+        _mediaPlayer = new QMediaPlayer;
+    }catch(...){
+        delete videowidget;
+        delete audioout;
+        return false;
+    }
+
+    _mediaPlayer->setAudioOutput(audioout);
+    _mediaPlayer->setVideoOutput(videowidget);
+
+    videowidget->setAutoFillBackground(false);
+
+    connect(_mediaPlayer, &QMediaPlayer::destroyed , videowidget, &QVideoWidget::deleteLater);
+    connect(_mediaPlayer, &QMediaPlayer::destroyed , audioout, &QAudioOutput::deleteLater);
+    connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::VideoStatusChanged);
+
+    connect(this, &MainWindow::VideoSetSource, _mediaPlayer, &QMediaPlayer::setSource);
+    connect(this, &MainWindow::VideoPlay, _mediaPlayer, &QMediaPlayer::play);
+
+    return true;
 }
 
 #ifdef _IS_PIODEVICE
@@ -393,6 +456,10 @@ void MainWindow::SetGamemode(Gamemode mode){
             emit PlaySoundNext(Sounds::Sound::nomusicpractice);
             return SetUIMode(UIMode::Initial);
         }
+        if(_ui->stackedWidget->currentIndex() == 0){
+            _currentgamemode = mode;
+            return SetUIMode(UIMode::Video);
+        }
         SetCurrentRound(1);
         _currentMusic.clear();
         _currentgamemode = Gamemode::Practice;
@@ -413,6 +480,10 @@ void MainWindow::SetGamemode(Gamemode mode){
             emit PlaySoundNext(Sounds::Sound::nomusicplay);
             return SetUIMode(UIMode::Initial);
         }
+        if(_ui->stackedWidget->currentIndex() == 0){
+            _currentgamemode = mode;
+            return SetUIMode(UIMode::Video);
+        }
         if(!StartThreadFileHandler()){
             emit PlaySoundNext(Sounds::Sound::filehandlingfail);
             SetGamemode(Gamemode::Initial);
@@ -429,6 +500,10 @@ void MainWindow::SetGamemode(Gamemode mode){
         break;
 
     case Gamemode::OneRandom:
+        if(_ui->stackedWidget->currentIndex() == 0){
+            _currentgamemode = mode;
+            return SetUIMode(UIMode::Video);
+        }
         SetCurrentRound(1);
         _currentgamemode = Gamemode::OneRandom;
         SetUIMode(UIMode::Playing);
@@ -444,6 +519,10 @@ void MainWindow::SetGamemode(Gamemode mode){
         if(QDir("Musicas").isEmpty()){
             emit PlaySoundNext(Sounds::Sound::nomusicplay);
             return SetUIMode(UIMode::Initial);
+        }
+        if(_ui->stackedWidget->currentIndex() == 0){
+            _currentgamemode = mode;
+            return SetUIMode(UIMode::Video);
         }
         if(!StartThreadFileHandler()){
             emit PlaySoundNext(Sounds::Sound::filehandlingfail);
@@ -462,6 +541,10 @@ void MainWindow::SetGamemode(Gamemode mode){
         break;
 
     case Gamemode::TwoRandom:
+        if(_ui->stackedWidget->currentIndex() == 0){
+            _currentgamemode = mode;
+            return SetUIMode(UIMode::Video);
+        }
         _isPlayer1 = true;
         SetCurrentRound(1);
         _currentgamemode = Gamemode::TwoRandom;
@@ -475,6 +558,10 @@ void MainWindow::SetGamemode(Gamemode mode){
         break;
 
     case Gamemode::TwoMakeSong:
+        if(_ui->stackedWidget->currentIndex() == 0){
+            _currentgamemode = mode;
+            return SetUIMode(UIMode::Video);
+        }
         _isPlayer1 = true;
         SetCurrentRound(1);
         _currentgamemode = Gamemode::TwoMakeSong;
@@ -520,6 +607,7 @@ void MainWindow::SetUIMode(UIMode mode){
     switch(mode){
 
     case UIMode::Initial:
+        _ui->stackedWidget->setCurrentIndex(0);
         SetTonesRandom();
         emit TimerBlinkStart(1000);
         _ui->labelInfo->setText("Aguardando...");
@@ -552,6 +640,7 @@ void MainWindow::SetUIMode(UIMode mode){
         break;
 
     case UIMode::Practice:
+        _ui->stackedWidget->setCurrentIndex(0);
         _ui->textConsole->setProperty("readOnly", true);
         _ui->textConsole->show();
         _ui->textConsole->clear();
@@ -572,6 +661,7 @@ void MainWindow::SetUIMode(UIMode mode){
         break;
 
     case UIMode::Playing:
+        _ui->stackedWidget->setCurrentIndex(0);
         _ui->textConsole->hide();
         _ui->textScores->show();
         _ui->buttonSilence->hide();
@@ -590,6 +680,7 @@ void MainWindow::SetUIMode(UIMode mode){
         break;
 
     case UIMode::PlayingCreate:
+        _ui->stackedWidget->setCurrentIndex(0);
         _ui->textConsole->hide();
         _ui->textScores->show();
         _ui->buttonSilence->hide();
@@ -608,6 +699,7 @@ void MainWindow::SetUIMode(UIMode mode){
         break;
 
     case UIMode::Creation:
+        _ui->stackedWidget->setCurrentIndex(0);
         _ui->buttonRecord->setEnabled(true);
         _ui->textConsole->setProperty("readOnly", false);
         _ui->textConsole->show();
@@ -628,6 +720,26 @@ void MainWindow::SetUIMode(UIMode mode){
         _ui->buttonPlay->setText("Tocar");
         _ui->textConsole->clear();
         SetTonesWhite();
+        break;
+
+    case UIMode::Video:
+
+        _ui->stackedWidget->setCurrentIndex(1);
+
+        if(!_videoSources.size()){
+            return SetGamemode(_currentgamemode);
+        }else if(_videocounter >= _videoSources.size()){
+            _videocounter = 0;
+        }
+
+        if(!QFileInfo::exists(_videoSources[_videocounter].toString())){
+            emit PlayTone(Sounds::Sound::invalidvideo);
+            return SetGamemode(_currentgamemode);
+        }
+
+        emit VideoSetSource(_videoSources[_videocounter]);
+        emit VideoPlay();
+        _videocounter++;
         break;
 
     default:
@@ -2043,6 +2155,12 @@ void MainWindow::TimerBlinkTimeout(){
 #ifdef _IS_PIODEVICE
     emit GPIOAlternateBlink();
 #endif
+}
+
+void MainWindow::VideoStatusChanged(QMediaPlayer::MediaStatus status){
+    if(status == QMediaPlayer::EndOfMedia){
+        SetGamemode(_currentgamemode);
+    }
 }
 
 void MainWindow::On_button1_Clicked(){

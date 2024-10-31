@@ -31,6 +31,7 @@ public:
         player1choosenote,
         failGPIO,
         winsound,
+        invalidvideo,
         _end
     };
 
