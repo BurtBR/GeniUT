@@ -92,8 +92,7 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
   > [Desktop Entry] <br>
   > Type=Application <br>
   > Name=GeniUT <br>
-  > Path=/home/geniut/Desktop/GeniUT <br>
-  > Exec=/home/geniut/Desktop/GeniUT/GeniUT <br>
+  > Exec=/bin/bash -c "cd /home/geniut/Desktop/GeniUT && ./GeniUT" <br>
 * Reinicie o dispositivo
   > sudo reboot
 
