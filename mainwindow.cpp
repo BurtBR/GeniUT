@@ -111,7 +111,6 @@ bool MainWindow::Init(){
 
     #ifdef _IS_PIODEVICE
     if(!StartThreadGPIO()){
-        delete videowidget;
         return false;
     }
     #endif
