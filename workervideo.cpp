@@ -5,7 +5,12 @@
 
 const QVector<QUrl> WorkerVideo::_videoSources{
     QUrl("./Videos/SabiaGeradoSeno.mp4"),
-    QUrl("./Videos/HardClipping.mp4")
+    QUrl("./Videos/HardClipping.mp4"),
+    QUrl("./Videos/G_Major.mp4"),
+    QUrl("./Videos/Harmonics.mp4"),
+    QUrl("./Videos/SquareSound.mp4"),
+    QUrl("./Videos/SawtoothSound.mp4"),
+    QUrl("./Videos/TriangularSound.mp4")
 };
 
 WorkerVideo::WorkerVideo(QObject *parent) : QObject{parent}{

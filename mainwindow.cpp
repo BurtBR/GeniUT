@@ -6,11 +6,6 @@
 
 #include "workervideo.h"
 
-const QVector<QUrl> MainWindow::_videoSources{
-    QUrl("./Videos/SabiaGeradoSeno.mp4"),
-    QUrl("./Videos/HardClipping.mp4")
-};
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
 
@@ -78,10 +73,6 @@ MainWindow::~MainWindow(){
     if(_timerBlink){
         delete _timerBlink;
         _timerBlink = nullptr;
-    }
-    if(_mediaPlayer){
-        delete _mediaPlayer;
-        _mediaPlayer = nullptr;
     }
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);

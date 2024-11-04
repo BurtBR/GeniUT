@@ -88,9 +88,6 @@ private:
 #endif
 
 private:
-    static const QVector<QUrl> _videoSources;
-    uint32_t _videocounter = 0;
-    QMediaPlayer *_mediaPlayer = nullptr;
     Ui::MainWindow *_ui;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
