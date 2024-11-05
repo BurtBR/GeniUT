@@ -10,6 +10,7 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
 ## Observação
 * O windows defender pode deletar temporariamente o executável após extração para verificar a existência de vírus. Aguarde esse processo.
 * Ao executar, o windows defender pode bloquear a execução por não conhecer a origem do aplicativo. Nesse caso clique em saber mais e depois em executar mesmo assim.
+* Caso opte por compilar no windows 10, habilite o recurso opcional "Graphics Tools" (ou ferramentas gráficas) no painel de configurações, sistema, aplicativos e recursos, gerenciar recursos opcionais, clique em adicionar recurso e procure por "Graphics Tools" (ou ferramentas gráficas) https://learn.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-devices-layers.
 
 ## Modos
 * **Praticar**: Nesse modo você pode testar as músicas salvas sem ter que reiniciar a partida quando falhar. O placar não é registrado nesse modo.

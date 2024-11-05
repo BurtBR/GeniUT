@@ -3,8 +3,21 @@
 
 #include <QVideoSink>
 #include <QAudioOutput>
+#include <QFileDialog>
+#include <QDir>
+#include <QMovie>
+#include <QKeyEvent>
+#include "workerfilehandler.h"
 
-#include "workervideo.h"
+const QVector<QUrl> MainWindow::_videoSources{
+    QUrl("./Videos/SabiaGeradoSeno.mp4"),
+    QUrl("./Videos/HardClipping.mp4"),
+    QUrl("./Videos/G_Major.mp4"),
+    QUrl("./Videos/Harmonics.mp4"),
+    QUrl("./Videos/SquareSound.mp4"),
+    QUrl("./Videos/SawtoothSound.mp4"),
+    QUrl("./Videos/TriangularSound.mp4")
+};
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
@@ -77,6 +90,7 @@ MainWindow::~MainWindow(){
     DeleteThread(&_threadSoundPlayer);
     DeleteThread(&_threadFileHandler);
     DeleteThread(&_threadVideo);
+    DeleteVideoResources();
     #ifdef _IS_PIODEVICE
         DeleteThread(&_threadGPIO);
     #endif
@@ -91,15 +105,19 @@ bool MainWindow::Init(){
             return false;
     }
 
+    if(_video){
+        return false;
+    }
+
     if(!StartThreadSoundPlayer()){
+        delete _video;
+        _video = nullptr;
         return false;
     }
 
     if(!StartThreadFileHandler()){
-        return false;
-    }
-
-    if(!StartThreadVideo()){
+        delete _video;
+        _video = nullptr;
         return false;
     }
 
@@ -380,38 +398,78 @@ bool MainWindow::StartThreadFileHandler(){
     return true;
 }
 
-bool MainWindow::StartThreadVideo(){
-    if(_threadVideo)
+bool MainWindow::StartVideo(){
+
+    if(!_videoSources.size()){
+        VideoEnded();
         return false;
+    }
 
-    WorkerVideo *worker;
+    if(_videocounter >= _videoSources.size())
+        _videocounter =0;
 
-    try{
-        _threadVideo = new QThread;
-    }catch(...){
-        _threadVideo = nullptr;
+    if(!QFileInfo::exists(_videoSources[_videocounter].toString())){
+        _videocounter++;
+        VideoEnded();
         return false;
     }
 
     try{
-        worker = new WorkerVideo;
+        _video = new QVideoWidget;
     }catch(...){
-        delete _threadVideo;
-        _threadVideo = nullptr;
         return false;
     }
 
-    connect(_threadVideo, &QThread::finished, worker, &WorkerVideo::deleteLater);
+    _ui->widgetVideo->layout()->addWidget(_video);
 
-    connect(worker, &WorkerVideo::FrameReady, this, &MainWindow::VideoFrameReady);
-    connect(worker, &WorkerVideo::EndOfVideo, this, &MainWindow::VideoEnded);
+    try{
+        _player = new QMediaPlayer;
+    }catch(...){
+        _player = nullptr;
+        VideoEnded();
+        return false;
+    }
 
-    connect(this, &MainWindow::VideoPlay, worker, &WorkerVideo::Play);
+    try{
+        _audioout = new QAudioOutput;
+    }catch(...){
+        delete _player;
+        _player = nullptr;
+        _audioout = nullptr;
+        VideoEnded();
+        return false;
+    }
 
-    worker->moveToThread(_threadVideo);
-    _threadVideo->start();
+    _player->setVideoOutput(_video);
+    _player->setAudioOutput(_audioout);
+    connect(_player, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::MediaStatusChanged);
+    _player->setSource(_videoSources[_videocounter++]);
+    _player->play();
 
     return true;
+}
+
+void MainWindow::DeleteVideoResources(){
+    if(_video){
+        delete _video;
+        _video = nullptr;
+    }
+
+    if(_player){
+        delete _player;
+        _player = nullptr;
+    }
+
+    if(_audioout){
+        delete _audioout;
+        _audioout = nullptr;
+    }
+}
+
+void MainWindow::MediaStatusChanged(QMediaPlayer::MediaStatus status){
+    if(status == QMediaPlayer::EndOfMedia){
+        VideoEnded();
+    }
 }
 
 void MainWindow::SetGamemode(Gamemode mode){
@@ -708,7 +766,7 @@ void MainWindow::SetUIMode(UIMode mode){
 
     case UIMode::Video:
         _ui->stackedWidget->setCurrentIndex(1);
-        emit VideoPlay();
+        StartVideo();
         break;
 
     default:
@@ -2127,16 +2185,8 @@ void MainWindow::TimerBlinkTimeout(){
 }
 
 void MainWindow::VideoEnded(){
-    _ui->labelVideo->clear();
+    DeleteVideoResources();
     SetGamemode(_currentgamemode);
-}
-
-void MainWindow::VideoFrameReady(QPixmap frame){
-#ifdef _IS_PIODEVICE
-    _ui->labelVideo->setPixmap(frame.scaled(_ui->labelVideo->width(), _ui->labelVideo->height(), Qt::KeepAspectRatio, Qt::FastTransformation));
-#else
-    _ui->labelVideo->setPixmap(frame.scaled(_ui->labelVideo->width(), _ui->labelVideo->height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-#endif
 }
 
 void MainWindow::On_button1_Clicked(){

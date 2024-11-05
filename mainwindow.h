@@ -4,17 +4,12 @@
 #include <QMainWindow>
 #include <QThread>
 #include <QTimer>
-#include <QKeyEvent>
-#include <QDir>
 #include <QFileInfo>
-#include <QFileDialog>
 #include <QRandomGenerator>
-#include <QMovie>
 #include <QMediaPlayer>
-#include <QVideoFrame>
+#include <QVideoWidget>
 
 #include "workersoundplayer.h"
-#include "workerfilehandler.h"
 
 #ifdef Q_OS_LINUX
     #define _IS_PIODEVICE
@@ -89,6 +84,11 @@ private:
 
 private:
     Ui::MainWindow *_ui;
+    static const QVector<QUrl> _videoSources;
+    uint32_t _videocounter = 0;
+    QVideoWidget *_video = nullptr;
+    QMediaPlayer *_player = nullptr;
+    QAudioOutput *_audioout = nullptr;
     QThread *_threadSoundPlayer = nullptr;
     QThread *_threadFileHandler = nullptr;
     QThread *_threadVideo = nullptr;
@@ -106,7 +106,9 @@ private:
     bool eventFilter(QObject *target, QEvent *event);
     bool StartThreadSoundPlayer();
     bool StartThreadFileHandler();
-    bool StartThreadVideo();
+    bool StartVideo();
+    void DeleteVideoResources();
+    void MediaStatusChanged(QMediaPlayer::MediaStatus status);
     void SetGamemode(Gamemode mode);
     void SetUIMode(UIMode mode);
     void ButtonClicked(ButtonType btn);
@@ -140,7 +142,6 @@ private slots:
     void MusicPressButton(uint8_t octave, uint8_t pos);
     void ReceivedFileMusic(QString filename, QString music, int clock, QVector<Sounds::Sound> musicvector);
     void TimerBlinkTimeout();
-    void VideoFrameReady(QPixmap frame);
     void VideoEnded();
 
     void On_button1_Clicked();
