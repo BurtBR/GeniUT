@@ -2127,6 +2127,7 @@ void MainWindow::TimerBlinkTimeout(){
 }
 
 void MainWindow::VideoEnded(){
+    _ui->labelVideo->clear();
     SetGamemode(_currentgamemode);
 }
 
