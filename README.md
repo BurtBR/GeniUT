@@ -35,7 +35,7 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
   
   > sudo apt-get install cmake
 * Instale o gstreamer com o pulseaudio:
-  > sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libvorbis-dev libsoup2.4-dev libvpx-dev
+  > sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt6 gstreamer1.0-pulseaudio libvorbis-dev libsoup2.4-dev libvpx-dev
 * Faça o download da ferramenta de instalação do QT, **selecione o componente "Qt Desktop" e a biblioteca adicional "Qt Multimedia"**. Lembrando que é possível realizar o download pelo terminal através do WGET.
   > https://d13lb3tujbc8s0.cloudfront.net/onlineinstallers/qt-online-installer-linux-arm64-4.8.1.run
 * Após a instalação do QT, extraia o conteúdo do arquivo GeniUT_1_0_3.zip em uma pasta na área de trabalho de nome "GeniUT". O arquivo executável deve estar no seguinte caminho:
@@ -49,7 +49,7 @@ Um jogo semelhante ao Genius mas com um alcance maior de notas. São 60 notas di
   
   > sudo apt-get install cmake
 * Instale o gstreamer com o pulseaudio:
-  > sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libvorbis-dev libsoup2.4-dev libvpx-dev
+  > sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt6 gstreamer1.0-pulseaudio libvorbis-dev libsoup2.4-dev libvpx-dev
 * Faça o download da ferramenta de instalação do QT, **selecione o componente "Qt Desktop" e a biblioteca adicional "Qt Multimedia"**. Lembrando que é possível realizar o download pelo terminal através do WGET.
   > https://d13lb3tujbc8s0.cloudfront.net/onlineinstallers/qt-online-installer-linux-arm64-4.8.1.run
 * Clone este repositório em alguma pasta
